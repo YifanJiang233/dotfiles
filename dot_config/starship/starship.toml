@@ -86,45 +86,45 @@ symbol = " "
 symbol = " "
 
 [os.symbols]
-Alpaquita = " "
-Alpine = " "
-Amazon = " "
-Android = " "
-Arch = " "
-Artix = " "
-CentOS = " "
-Debian = " "
-DragonFly = " "
-Emscripten = " "
-EndeavourOS = " "
-Fedora = " "
-FreeBSD = " "
-Garuda = "󰛓 "
-Gentoo = " "
-HardenedBSD = "󰞌 "
-Illumos = "󰈸 "
-Linux = " "
-Mabox = " "
-Macos = " "
-Manjaro = " "
-Mariner = " "
-MidnightBSD = " "
-Mint = " "
-NetBSD = " "
-NixOS = " "
-OpenBSD = "󰈺 "
-openSUSE = " "
-OracleLinux = "󰌷 "
-Pop = " "
-Raspbian = " "
-Redhat = " "
+Alpaquita        = " "
+Alpine           = " "
+Amazon           = " "
+Android          = " "
+Arch             = " "
+Artix            = " "
+CentOS           = " "
+Debian           = " "
+DragonFly        = " "
+Emscripten       = " "
+EndeavourOS      = " "
+Fedora           = " "
+FreeBSD          = " "
+Garuda           = "󰛓 "
+Gentoo           = " "
+HardenedBSD      = "󰞌 "
+Illumos          = "󰈸 "
+Linux            = " "
+Mabox            = " "
+Macos            = " "
+Manjaro          = " "
+Mariner          = " "
+MidnightBSD      = " "
+Mint             = " "
+NetBSD           = " "
+NixOS            = " "
+OpenBSD          = "󰈺 "
+openSUSE         = " "
+OracleLinux      = "󰌷 "
+Pop              = " "
+Raspbian         = " "
+Redhat           = " "
 RedHatEnterprise = " "
-Redox = "󰀘 "
-Solus = "󰠳 "
-SUSE = " "
-Ubuntu = " "
-Unknown = " "
-Windows = "󰍲 "
+Redox            = "󰀘 "
+Solus            = "󰠳 "
+SUSE             = " "
+Ubuntu           = " "
+Unknown          = " "
+Windows          = "󰍲 "
 
 [package]
 symbol = "󰏗 "
@@ -146,8 +146,14 @@ symbol = "󰟔 "
 
 [ruby]
 symbol = " "
-detect_variables = []
-# disabled= true
+# Hide the module if no specific Ruby project files are detected
+# This might be useful if you're in a non-Ruby directory but a global Ruby is active
+detect_files = [
+  ".ruby-version",
+  "Gemfile",
+] # Or other specific files you want to trigger it
+detect_extensions = [] # Clear default extensions if desired
+# disabled          = true
 
 [rust]
 symbol = " "
@@ -160,4 +166,3 @@ symbol = " "
 
 [zig]
 symbol = " "
-

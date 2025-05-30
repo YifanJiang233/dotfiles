@@ -1,6 +1,6 @@
-{{ if ne .chezmoi.os "darwin"}}
-eval "$(/opt/homebrew/bin/brew shellenv)"
 export LATEXINDENT_CONFIG="$HOME/.config/latexindent/indentconfig.yaml"
 export TAPLO_CONFIG="$HOME/.config/taplo/taplo.toml"
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
-{{ end }}
+{{- if eq .chezmoi.os "darwin"}}
+eval "$(/opt/homebrew/bin/brew shellenv)"
+{{ end -}}
