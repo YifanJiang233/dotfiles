@@ -1,0 +1,48 @@
+# This is a demo config to show some of the most important commands more easily.
+# This is meant to be changed and configured, as it is intentionally kept sparse.
+# For a more advanced configuration example see my dotfiles:
+# https://github.com/FelixKratz/dotfiles
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+ITEM_DIR="$CONFIG_DIR/items"
+source "$CONFIG_DIR/styles/style.sh"
+
+# ##### Bar Appearance #####
+
+# Setting up the general bar appearance and default values
+sketchybar --bar "${bar_config[@]}" \
+	--default \
+	"${icon_defaults[@]}" \
+	"${label_defaults[@]}" \
+	"${background_defaults[@]}" \
+	"${popup_defaults[@]}"
+
+
+
+##### Adding Left Items #####
+# We add some regular items to the left side of the bar
+# only the properties deviating from the current defaults need to be set
+
+source $ITEM_DIR/apple.sh
+source $ITEM_DIR/aerospace.sh
+
+##### Adding Center Items #####
+# We add some regular items to the center of the bar
+# source $ITEM_DIR/lyric.sh
+source $ITEM_DIR/front_app.sh
+
+
+##### Adding Right Items #####
+          
+source $ITEM_DIR/calendar.sh
+source $ITEM_DIR/battery.sh
+source $ITEM_DIR/wifi.sh
+source $ITEM_DIR/volume.sh
+# source $ITEM_DIR/media.sh
+
+# The below command is only needed at the end of the initial configuration to
+# force all scripts to run the first time, it should never be run in an item script.
+sketchybar --hotload on
+sketchybar --update
+
+echo  "SketchyBar has been configured."   

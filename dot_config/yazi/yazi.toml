@@ -1,0 +1,11 @@
+[preview]
+max_width  = 1000
+max_height = 2000
+
+[opener]
+tdf = [
+  { run = 'tdf -f true "$0"', desc = "Open pdf with tdf.", block = true, orphan = true },
+]
+
+[open]
+prepend_rules = [{ name = "*.pdf", use = "tdf" }]

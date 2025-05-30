@@ -1,0 +1,105 @@
+import catppuccin
+
+# pylint: disable=C0111
+from qutebrowser.config.configfiles import ConfigAPI  # noqa: F401
+from qutebrowser.config.config import ConfigContainer  # noqa: F401
+
+config: ConfigAPI = config  # noqa: F821 pylint: disable=E0602,C0103
+c: ConfigContainer = c  # noqa: F821 pylint: disable=E0602,C0103
+
+config.load_autoconfig(False)
+
+# set the flavor you'd like to use
+# valid options are 'mocha', 'macchiato', 'frappe', and 'latte'
+# last argument (optional, default is False): enable the plain look for the menu rows
+catppuccin.setup(c, "mocha", True)
+
+# hide the title bar
+config.set("window.hide_decoration", True)
+
+# set external editor
+c.editor.command = [
+    "/Applications/WezTerm.app/Contents/MacOS/wezterm-gui",
+    "start",
+    "--always-new-process",
+    "--",
+    "/opt/homebrew/bin/nvim",
+    "-f",
+    "{file}",
+    "-c",
+    "normal {line}G{column0}l",
+]
+
+# key bindings
+
+c.bindings.commands = {
+    "normal": {
+        "e": "config-cycle statusbar.show always never;; config-cycle tabs.show always never",
+        "x": "tab-close",
+        "X": "undo",
+        "J": "tab-next",
+        "K": "tab-prev",
+        "d": "cmd-run-with-count 10 scroll down",
+        "u": "cmd-run-with-count 10 scroll up",
+        "j": "cmd-run-with-count 3 scroll down",
+        "k": "cmd-run-with-count 3 scroll up",
+        "p": "open -- {clipboard}",
+        "P": "open -t -- {clipboard}",
+        "gj": "tab-move -",
+        "gk": "tab-move +",
+    },
+    "insert": {
+        "<Ctrl-i>": "edit-text",
+        "<Ctrl-f>": "fake-key <Right>",
+        "<Ctrl-b>": "fake-key <Left>",
+        "<Ctrl-a>": "fake-key <Home>",
+        "<Ctrl-e>": "fake-key <End>",
+        "<Ctrl-n>": "fake-key <Down>",
+        "<Ctrl-p>": "fake-key <Up>",
+        "<Ctrl-d>": "fake-key <Delete>",
+        "<Ctrl-y>": "insert-text {primary}",
+        "<Ctrl-w>": "fake-key <Ctrl-backspace>",
+        "<Ctrl-k>": "fake-key <Shift-End> ;; fake-key <Delete>",
+        "<Esc>": "fake-key <Esc> ;; mode-leave",
+        "<Enter>": "fake-key <Enter> ;; Enter;; mode-leave",
+    },
+}
+
+# search engines
+c.url.searchengines = {
+    "DEFAULT": "https://google.com/search?q={}",
+    "google": "https://google.com/search?q={}",
+    "github": "https://github.com/search?q={}",
+    "scholar": "https://scholar.google.com/scholar?q={}",
+    "arxiv": "https://arxiv.org/search/?query={}&searchtype=all",
+}
+
+# set tab styles
+c.tabs.position = "left"
+c.tabs.padding = {"bottom": 4, "left": 4, "right": 4, "top": 4}
+
+
+# set tab indicator color
+c.colors.tabs.indicator.error = "#f38ba8"
+c.colors.tabs.indicator.start = "#89b4fa"
+c.colors.tabs.indicator.stop = "#a6e3a1"
+
+
+# set hint styles
+c.hints.border = "none"
+c.hints.padding = {"bottom": 3, "left": 3, "right": 3, "top": 3}
+c.hints.uppercase = True
+c.colors.hints.bg = "#b6e1f6"
+c.colors.hints.fg = "#1e66f5"
+c.colors.hints.match.fg = "#cdd6f4"
+c.fonts.hints = "15pt"
+
+# set global fontsize
+c.fonts.default_size = "15pt"
+
+
+# enable smooth scolling
+c.scrolling.smooth = True
+
+# enable pdfjs
+c.content.pdfjs = True
