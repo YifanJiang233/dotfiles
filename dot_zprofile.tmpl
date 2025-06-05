@@ -1,6 +1,15 @@
 export LATEXINDENT_CONFIG="$HOME/.config/latexindent/indentconfig.yaml"
 export TAPLO_CONFIG="$HOME/.config/taplo/taplo.toml"
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+export EDITOR=nvim
+export VISUAL=nvim
+
 {{- if eq .chezmoi.os "darwin"}}
 eval "$(/opt/homebrew/bin/brew shellenv)"
+{{ end -}}
+
+{{- if eq .chezmoi.os "linux"}}
+if [[ -z "$DISPLAY" ]] && [[ $(tty) = /dev/tty1 ]]; then
+    exec sway
+fi
 {{ end -}}
