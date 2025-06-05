@@ -5,7 +5,7 @@
 .config/svim
 {{ end}}
 
-{{ if ne .chezmoi.os "darwin"}}
+{{ if ne .chezmoi.os "linux"}}
 .config/sway
 .config/tofi
 .config/waybar
