@@ -17,19 +17,6 @@ catppuccin.setup(c, "mocha", True)
 # hide the title bar
 config.set("window.hide_decoration", True)
 
-# set external editor
-c.editor.command = [
-    "/Applications/WezTerm.app/Contents/MacOS/wezterm-gui",
-    "start",
-    "--always-new-process",
-    "--",
-    "/opt/homebrew/bin/nvim",
-    "-f",
-    "{file}",
-    "-c",
-    "normal {line}G{column0}l",
-]
-
 # key bindings
 
 c.bindings.commands = {
@@ -94,8 +81,9 @@ c.colors.hints.fg = "#1e66f5"
 c.colors.hints.match.fg = "#cdd6f4"
 c.fonts.hints = "15pt"
 
-# set global fontsize
+# set global font
 c.fonts.default_size = "15pt"
+c.fonts.default_family = "JetBrains Mono"
 
 
 # enable smooth scolling
@@ -103,3 +91,24 @@ c.scrolling.smooth = True
 
 # enable pdfjs
 c.content.pdfjs = True
+
+# MacOS specific configurations
+{{- if eq .chezmoi.os "darwin"}}
+# set external editor
+c.editor.command = [
+    "/Applications/WezTerm.app/Contents/MacOS/wezterm-gui",
+    "start",
+    "--always-new-process",
+    "--",
+    "/opt/homebrew/bin/nvim",
+    "-f",
+    "{file}",
+    "-c",
+    "normal {line}G{column0}l",
+]
+{{ end -}}
+
+# Linux specific configurations
+{{- if eq .chezmoi.os "linux"}}
+c.zoom.default = 125
+{{ end -}}
