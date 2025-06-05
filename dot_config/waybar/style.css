@@ -1,0 +1,76 @@
+@import "mocha.css";
+
+* {
+    /* border: none; */
+    border-radius: 0;
+    font-family: JetBrains Mono, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    min-height: 0;
+    color: @text;
+}
+
+.module-right {
+    margin: 0 15px;
+}
+
+window#waybar {
+    background: shade(@base, 0.9);
+    /* border-bottom: 3px solid rgba(100, 114, 125, 0.5); */
+    /* color: white; */
+}
+
+tooltip {
+  background: rgba(43, 48, 59, 0.5);
+  border: 1px solid rgba(100, 114, 125, 0.5);
+}
+tooltip label {
+  color: white;
+}
+
+#workspaces button {
+    padding: 4px;
+    background: transparent;
+    /* color: white; */
+}
+
+#workspaces button.focused {
+    background: @surface2;
+    box-shadow: inset 0 -3px @blue;
+}
+
+#mode, #clock, #battery, #network {
+    margin: 0 10px;
+}
+
+#mode {
+    background: transparent;
+    /* border-bottom: 3px solid white; */
+}
+
+#clock {
+}
+
+#battery {
+}
+
+#battery.charging {
+    color: @green
+}
+
+@keyframes blink {
+    to {
+        background-color: #ffffff;
+        color: black;
+    }
+}
+
+#battery.warning:not(.charging) {
+    background: #f53c3c;
+    color: white;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: steps(12);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
