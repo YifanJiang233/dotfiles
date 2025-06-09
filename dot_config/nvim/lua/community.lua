@@ -12,7 +12,7 @@ return {
 	{ import = "astrocommunity.pack.yaml" },
 	{ import = "astrocommunity.pack.toml" },
 	{ import = "astrocommunity.pack.python-ruff" },
-	{ import = "astrocommunity.pack.chezmoi" },
+	-- { import = "astrocommunity.pack.chezmoi" },
 	{ import = "astrocommunity.pack.docker" },
 	{ import = "astrocommunity.pack.bash" },
 	-- { import = "astrocommunity.completion.avante-nvim" },
