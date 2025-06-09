@@ -73,13 +73,17 @@ c.colors.tabs.indicator.stop = "#a6e3a1"
 
 
 # set hint styles
-c.hints.border = "none"
-c.hints.padding = {"bottom": 3, "left": 3, "right": 3, "top": 3}
+c.hints.border = "1px outset #6c7086"
+c.hints.padding = {"bottom": 2, "left": 3, "right": 3, "top": 2}
+c.hints.radius = 5
 c.hints.uppercase = True
-c.colors.hints.bg = "#b6e1f6"
-c.colors.hints.fg = "#1e66f5"
-c.colors.hints.match.fg = "#cdd6f4"
-c.fonts.hints = "15pt"
+# c.colors.hints.bg = "#585b70"
+# c.colors.hints.fg = "#cdd6f4"
+# c.colors.hints.match.fg = "#cba6f7"
+c.colors.hints.bg = "#181825"
+c.colors.hints.fg = "#f9e2af"
+c.colors.hints.match.fg = "#f38ba8"
+c.fonts.hints = "bold 12pt"
 
 # set global font
 c.fonts.default_size = "15pt"
@@ -92,8 +96,13 @@ c.scrolling.smooth = True
 # enable pdfjs
 c.content.pdfjs = True
 
+{{ if eq .chezmoi.os "darwin"}}
 # MacOS specific configurations
-{{- if eq .chezmoi.os "darwin"}}
+
+# Hint links and open the selected link's URL in IINA
+c.bindings.commands["normal"][";v"] = "hint links spawn open -a IINA {hint-url}"
+c.bindings.commands["normal"][";V"] = "spawn open -a IINA {url}"
+
 # set external editor
 c.editor.command = [
     "/Applications/WezTerm.app/Contents/MacOS/wezterm-gui",
@@ -106,9 +115,9 @@ c.editor.command = [
     "-c",
     "normal {line}G{column0}l",
 ]
-{{ end -}}
+{{ end }}
 
+{{ if eq .chezmoi.os "linux"}}
 # Linux specific configurations
-{{- if eq .chezmoi.os "linux"}}
 c.zoom.default = 125
-{{ end -}}
+{{ end }}
