@@ -14,5 +14,11 @@ config.window_background_opacity = 0.9
 -- For example, changing the color scheme:
 config.color_scheme = "Catppuccin Mocha"
 
+config.unix_domains = {
+  {
+    name = "hysteria",
+  },
+}
+
 -- and finally, return the configuration to wezterm
 return config
