@@ -3,6 +3,7 @@
 .config/borders
 .config/sketchybar
 .config/svim
+.config/karabiner
 {{ end}}
 
 {{ if ne .chezmoi.os "linux"}}
