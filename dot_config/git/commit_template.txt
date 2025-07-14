@@ -1,0 +1,39 @@
+# --- TYPE ---
+# Must be one of the following:
+# feat: A new feature
+# fix: A bug fix
+# docs: Documentation only changes
+# style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+# refactor: A code change that neither fixes a bug nor adds a feature
+# perf: A code change that improves performance
+# test: Adding missing tests or correcting existing tests
+# build: Changes that affect the build system or external dependencies
+# ci: Changes to our CI configuration files and scripts
+# chore: Other changes that don't modify src or test files
+# revert: Reverts a previous commit
+
+# --- SCOPE ---
+# Optional, can be anything specifying the place of the commit change.
+# For example: (api), (db), (ui), etc.
+
+# --- DESCRIPTION ---
+# A short, imperative-tense description of the change.
+# - Use the present tense ("Add feature" not "Added feature")
+# - Don't capitalize the first letter
+# - No dot (.) at the end
+
+# --- BODY ---
+# Optional, provide more context about the changes.
+# - Use the imperative, present tense.
+# - Explain the "why" and "what" vs. the "how".
+
+# --- BREAKING CHANGE ---
+# A commit that has a footer `BREAKING CHANGE:` or appends a `!` after the type/scope, introduces a breaking API change.
+# A BREAKING CHANGE can be part of any type of commit.
+# e.g., feat(api)!: send an email to the customer when a product is shipped
+# or
+# BREAKING CHANGE: The `name` property is now required.
+
+# --- FOOTER ---
+# Optional, reference issues or pull requests.
+# e.g., Closes #123, Refs #456
