@@ -2,7 +2,6 @@
 
 battery=(
   script="$PLUGIN_DIR/battery.sh"
-  padding_left=0
   padding_right=0
   label.width=0
   update_freq=120

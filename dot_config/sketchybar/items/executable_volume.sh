@@ -37,7 +37,6 @@ current_vol=$(osascript -e 'output volume of (get volume settings)')
 
 volume=(
   script="$PLUGIN_DIR/volume.sh"
-  padding_left=0
   padding_right=0
   label.width=0
 )
