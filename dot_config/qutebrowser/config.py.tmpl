@@ -47,8 +47,7 @@ c.bindings.commands = {
         "<Ctrl-y>": "insert-text {primary}",
         "<Ctrl-w>": "fake-key <Ctrl-backspace>",
         "<Ctrl-k>": "fake-key <Shift-End> ;; fake-key <Delete>",
-        "<Esc>": "fake-key <Esc> ;; mode-leave",
-        "<Enter>": "fake-key <Enter> ;; Enter;; mode-leave",
+        "<Esc>": "mode-leave ;; jseval -q document.activeElement.blur()",
     },
 }
 

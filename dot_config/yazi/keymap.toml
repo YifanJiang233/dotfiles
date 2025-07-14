@@ -15,8 +15,8 @@ desc = "CD to ~/Downloads"
 
 [[mgr.prepend_keymap]]
 on   = ["g", "c"]
-run  = "cd ~/.local/share/chezmoi"
-desc = "CD to chezmoi"
+run  = "cd ~/.config"
+desc = "CD to ~/.config"
 
 [[mgr.prepend_keymap]]
 on   = ["g", "D"]
