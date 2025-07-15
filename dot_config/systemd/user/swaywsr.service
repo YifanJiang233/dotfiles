@@ -1,0 +1,13 @@
+[Unit]
+Description=Sway Workspace Renamer
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/swaywsr
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target

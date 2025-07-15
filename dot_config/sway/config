@@ -16,6 +16,8 @@ set $up k
 set $right l
 # Your preferred terminal emulator
 set $term wezterm
+# Your preferred browser
+set $browser qutebrowser
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
@@ -73,7 +75,12 @@ input "type:touchpad" {
     natural_scroll enabled
 }
 
-# target                 title     bg    text   indicator  border
+# Clipboard 
+# exec wl-paste --watch cliphist store
+# bindsym $mod+p exec cliphist list | tofi --fuzzy-match=true | cliphist decode | wl-copy
+bindsym $mod+p exec sh -c 'cliphist list | tofi --fuzzy-match=true | cliphist decode | tee >(wl-copy) | wtype -'
+
+# Target                 title     bg    text   indicator  border
 client.focused           $lavender $base $text  $rosewater $lavender
 client.focused_inactive  $overlay0 $base $text  $rosewater $overlay0
 client.unfocused         $overlay0 $base $text  $rosewater $overlay0
@@ -102,6 +109,9 @@ titlebar_border_thickness 0
 #
     # Start a terminal
     bindsym $mod+Return exec $term
+
+    # Start  qutebrowser
+    bindsym $mod+q exec $browser
 
     # Kill focused window
     bindsym Alt+q kill
@@ -161,6 +171,9 @@ titlebar_border_thickness 0
 #
 # Workspaces:
 #
+    # Run swaywsr for dynamic workspace naming
+    # exec_always pgrep -x swaywsr > /dev/null && pkill -x swaywsr; swaywsr
+
     # Switch to workspace
     bindsym $mod+1 workspace number 1
     bindsym $mod+2 workspace number 2
@@ -191,6 +204,9 @@ titlebar_border_thickness 0
 #
 # Layout stuff:
 #
+    # Run autotiling at start
+    # exec autotiling-rs
+
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
