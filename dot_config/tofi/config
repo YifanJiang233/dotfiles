@@ -6,3 +6,4 @@ selection-color = #f9e2af
 background-color = #1e1e2e
 border-width = 0
 outline-color = #89b4fa
+terminal = "wezterm start"
