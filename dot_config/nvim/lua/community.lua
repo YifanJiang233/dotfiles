@@ -9,6 +9,7 @@ return {
 	{ import = "astrocommunity.markdown-and-latex.vimtex" },
 	{ import = "astrocommunity.motion.flash-nvim" },
 	{ import = "astrocommunity.pack.lua" },
+	{ import = "astrocommunity.pack.go" },
 	{ import = "astrocommunity.pack.yaml" },
 	{ import = "astrocommunity.pack.toml" },
 	{ import = "astrocommunity.pack.python-ruff" },
