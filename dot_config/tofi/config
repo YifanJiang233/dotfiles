@@ -1,5 +1,6 @@
 # Catppuccin Mocha
 font = JetBrains Mono
+font-size = 20pt
 text-color = #cdd6f4
 prompt-color = #f38ba8
 selection-color = #f9e2af
