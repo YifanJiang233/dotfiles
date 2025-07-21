@@ -77,8 +77,11 @@ input "type:touchpad" {
 
 # Clipboard 
 # exec wl-paste --watch cliphist store
-# bindsym $mod+p exec cliphist list | tofi --fuzzy-match=true | cliphist decode | wl-copy
-bindsym $mod+p exec sh -c 'cliphist list | tofi --fuzzy-match=true | cliphist decode | tee >(wl-copy) | wtype -'
+bindsym $mod+p exec cliphist list | tofi --fuzzy-match=true | cliphist decode | wl-copy
+#bindsym $mod+p exec sh -c 'cliphist list | tofi --fuzzy-match=true | cliphist decode | tee >(wl-copy) | wtype -'
+
+# Searching
+bindsym $mod+s exec sh -c 'fd --type f . $HOME | sed -e "s@^$HOME/@~/@" | tofi | sed -e "s@^~@$HOME@" | xargs -I {} xdg-open {}'
 
 # Target                 title     bg    text   indicator  border
 client.focused           $lavender $base $text  $rosewater $lavender
@@ -114,7 +117,7 @@ titlebar_border_thickness 0
     bindsym $mod+q exec $browser
 
     # Kill focused window
-    bindsym Alt+q kill
+    bindsym $mod+w kill
 
     # Start your launcher
     bindsym $mod+space exec $drun
@@ -214,8 +217,8 @@ titlebar_border_thickness 0
     bindsym $mod+v splitv
 
     # Switch the current container between different layout styles
-    bindsym $mod+s layout stacking
-    bindsym $mod+w layout tabbed
+    bindsym $mod+z layout stacking
+    # bindsym $mod+w layout tabbed
     bindsym $mod+e layout toggle split
 
     # Make the current focus fullscreen
@@ -308,3 +311,5 @@ bar swaybar_command waybar
 # }
 
 include /etc/sway/config.d/*
+
+exec_always systemctl --user start sway-session.target
