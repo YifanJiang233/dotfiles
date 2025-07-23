@@ -31,7 +31,7 @@ output * bg /home/yifan/Pictures/catppuccin-rainbow-arch.png fill
 #
 # Example configuration:
 #
-output HDMI-A-1 position -1920,0
+output HDMI-A-1 position 1920,0
 output eDP-1 position 0,0
 #   output HDMI-A-1 resolution 1920x1080 position 1920,0
 #
@@ -74,6 +74,8 @@ input "type:touchpad" {
     tap enabled
     natural_scroll enabled
 }
+
+# input * map_to_output *
 
 # Clipboard 
 # exec wl-paste --watch cliphist store
@@ -204,6 +206,9 @@ titlebar_border_thickness 0
 
     # Switch to the previously active workspace
     bindsym $mod+Tab workspace back_and_forth
+
+    # Move focused container to the next output
+    bindsym $mod+Shift+Tab move container to output right; focus output right
 #
 # Layout stuff:
 #

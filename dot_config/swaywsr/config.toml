@@ -1,0 +1,10 @@
+[icons]
+
+[aliases]
+"org.wezfurlong.wezterm" = "wezterm"
+
+[general]
+separator = " ¦ "
+
+[options]
+remove-duplicates = true
