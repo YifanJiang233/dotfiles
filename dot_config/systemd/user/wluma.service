@@ -1,0 +1,14 @@
+[Unit]
+Description=Adjusting screen brightness based on screen contents and amount of ambient light
+PartOf=sway-session.target
+After=sway-session.target
+
+[Service]
+ExecStart=/usr/bin/wluma
+Restart=always
+EnvironmentFile=-%E/wluma/service.conf
+PrivateNetwork=true
+PrivateMounts=false
+
+[Install]
+WantedBy=sway-session.target
