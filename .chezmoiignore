@@ -10,4 +10,6 @@
 .config/sway
 .config/tofi
 .config/waybar
+.config/pacseek
+.config/systemd
 {{ end}}

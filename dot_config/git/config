@@ -1,0 +1,5 @@
+[user]
+	name = Yifan Jiang
+	email = yifanjiang233@gmail.com
+[commit]
+	template = $HOME/.config/git/commit_template.txt

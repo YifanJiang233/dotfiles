@@ -8,6 +8,11 @@ use = "yazi-rs/plugins:smart-paste"
 rev = "c0ad8a3"
 hash = "6fe47945aff6571d76f3beb65099ad7a"
 
+[[plugin.deps]]
+use = "GianniBYoung/rsync"
+rev = "55631aa"
+hash = "fb38b3c546e6594961b335cee4eaa340"
+
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
 rev = "657aaf3"
