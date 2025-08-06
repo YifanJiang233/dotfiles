@@ -44,7 +44,9 @@ c.bindings.commands = {
         "P": "open -t -- {clipboard}",
         "gj": "tab-move -",
         "gk": "tab-move +",
-        "gp": "spawn --userscript bw"
+        ";p": "spawn --userscript bw",
+        ";v": "config-cycle content.proxy system socks://127.0.0.1:1080",
+        "cs": "config-source"
     },
     "insert": {
         "<Ctrl-i>": "edit-text",
@@ -107,6 +109,9 @@ c.scrolling.smooth = True
 
 # enable pdfjs
 c.content.pdfjs = True
+
+# auto save session
+c.auto_save.session = True
 
 {{ if eq .chezmoi.os "darwin"}}
 # MacOS specific configurations
