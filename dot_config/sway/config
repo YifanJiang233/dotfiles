@@ -75,11 +75,14 @@ input "type:touchpad" {
     natural_scroll enabled
 }
 
+# Autostart Fcitx5 daemon
+exec_always --no-startup-id "fcitx5 -d --replace"
+
 # input * map_to_output *
 
 # Clipboard 
 # exec wl-paste --watch cliphist store
-bindsym $mod+p exec cliphist list | tofi --fuzzy-match=true | cliphist decode | wl-copy
+bindsym Ctrl+p exec cliphist list | tofi --fuzzy-match=true | cliphist decode | wl-copy
 #bindsym $mod+p exec sh -c 'cliphist list | tofi --fuzzy-match=true | cliphist decode | tee >(wl-copy) | wtype -'
 
 # Searching
@@ -124,6 +127,9 @@ titlebar_border_thickness 0
     # Start your launcher
     bindsym $mod+space exec $drun
     bindsym $mod+Shift+d exec $menu 
+    
+    # Start dmenu
+    bindsym $mod+d exec sh -c 'script_path="$HOME/.config/tofi/scripts" && selected=$(fd . "$script_path" | sed "s#$script_path/##" | tofi --include="$HOME/.config/tofi/dmenu_config") && [ -n "$selected" ] && exec "$script_path/$selected"'
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
