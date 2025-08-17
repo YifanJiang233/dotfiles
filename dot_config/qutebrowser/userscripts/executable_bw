@@ -34,6 +34,7 @@ import argparse
 import enum
 import functools
 import os
+import pyperclip
 import shlex
 import subprocess
 import sys
@@ -317,8 +318,10 @@ def main(arguments):
     totp = selection["login"]["totp"]
 
     if arguments.username_only:
+        pyperclip.copy(username)
         fake_key_raw(username)
     elif arguments.password_only:
+        pyperclip.copy(password)
         fake_key_raw(password)
     elif arguments.totp_only:
         # No point in moving it to the clipboard in this case
@@ -346,7 +349,6 @@ def main(arguments):
     # which is the same behavior as the Firefox add-on.
     if not arguments.totp_only and totp and arguments.totp:
         # The import is done here, to make pyperclip an optional dependency
-        import pyperclip
 
         pyperclip.copy(
             get_totp_code(

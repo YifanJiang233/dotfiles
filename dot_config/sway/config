@@ -137,6 +137,9 @@ titlebar_border_thickness 0
     # Change normal to inverse to use left mouse button for resizing and right
     # mouse button for dragging.
     floating_modifier $mod normal
+    
+    # Set floating applications
+    for_window [app_id="floating_wezterm"] floating enable
 
     # Reload the configuration file
     bindsym $mod+Shift+c reload

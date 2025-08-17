@@ -25,7 +25,7 @@ if os.path.exists(config.configdir / "theme.py"):
     import theme
     theme.setup(c, 'mocha', True)
 # hide the title bar
-config.set("window.hide_decoration", True)
+c.window.hide_decoration = True
 
 # key bindings
 
@@ -45,6 +45,8 @@ c.bindings.commands = {
         "gj": "tab-move -",
         "gk": "tab-move +",
         ";p": "spawn --userscript bw",
+        ";w": "spawn --userscript bw --password-only",
+        ";u": "spawn --userscript bw --username-only",
         ";v": "config-cycle content.proxy system socks://127.0.0.1:1080",
         "cs": "config-source"
     },
@@ -88,7 +90,7 @@ c.colors.tabs.indicator.stop = "#a6e3a1"
 
 # set hint styles
 c.hints.border = "1px outset #6c7086"
-c.hints.padding = {"bottom": 2, "left": 3, "right": 3, "top": 2}
+c.hints.padding = {"bottom": 2, "left": 4, "right": 4, "top": 2}
 c.hints.radius = 5
 c.hints.uppercase = True
 # c.colors.hints.bg = "#585b70"
@@ -97,7 +99,7 @@ c.hints.uppercase = True
 c.colors.hints.bg = "#181825"
 c.colors.hints.fg = "#f9e2af"
 c.colors.hints.match.fg = "#f38ba8"
-c.fonts.hints = "bold 18px"
+c.fonts.hints = "bold 18px JetBrains Mono"
 
 # set global font
 c.fonts.default_size = "18px"
@@ -139,4 +141,17 @@ c.editor.command = [
 {{ if eq .chezmoi.os "linux"}}
 # Linux specific configurations
 c.zoom.default = 125
+c.editor.command = [
+    "wezterm",
+    "start",
+    "--always-new-process",
+    "--class",
+    "floating_wezterm",
+    "--",
+    "/usr/bin/nvim",
+    "-f",
+    "{file}",
+    "-c",
+    "normal {line}G{column0}l",
+]
 {{ end }}
