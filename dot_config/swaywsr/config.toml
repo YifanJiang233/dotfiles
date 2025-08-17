@@ -1,7 +1,8 @@
 [icons]
 
 [aliases]
-"org.wezfurlong.wezterm" = "wezterm"
+"org.wezfurlong.wezterm"      = "wezterm"
+"org.qutebrowser.qutebrowser" = "qutebrowser"
 
 [general]
 separator = " ¦ "

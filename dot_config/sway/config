@@ -27,7 +27,7 @@ set $drun tofi-drun | xargs swaymsg exec --
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /home/yifan/Pictures/catppuccin-rainbow-arch.png fill
+output * bg /home/yifan/Pictures/astronaut-nord.png fill
 #
 # Example configuration:
 #
@@ -215,6 +215,10 @@ titlebar_border_thickness 0
 
     # Move focused container to the next output
     bindsym $mod+Shift+Tab move container to output right; focus output right
+
+    # Handle lid switch
+    bindswitch lid:on exec swaymsg "output eDP-1 disable"
+    bindswitch lid:off exec swaymsg "output eDP-1 enable"
 #
 # Layout stuff:
 #
