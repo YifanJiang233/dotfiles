@@ -88,6 +88,12 @@ bindsym Ctrl+p exec cliphist list | tofi --fuzzy-match=true | cliphist decode | 
 # Searching
 bindsym $mod+s exec sh -c 'fd --type f . $HOME | sed -e "s@^$HOME/@~/@" | tofi | sed -e "s@^~@$HOME@" | xargs -I {} xdg-open {}'
 
+# Screenshot
+bindsym $mod+p       exec shotman --capture window
+bindsym $mod+Shift+p exec shotman --capture region
+bindsym $mod+Ctrl+p  exec shotman --capture output
+
+#
 # Target                 title     bg    text   indicator  border
 client.focused           $lavender $base $text  $rosewater $lavender
 client.focused_inactive  $overlay0 $base $text  $rosewater $overlay0
@@ -231,13 +237,13 @@ titlebar_border_thickness 0
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
-    bindsym $mod+b splith
-    bindsym $mod+v splitv
+    # bindsym $mod+b splith
+    # bindsym $mod+v splitv
 
     # Switch the current container between different layout styles
-    bindsym $mod+z layout stacking
+    # bindsym $mod+z layout stacking
     # bindsym $mod+w layout tabbed
-    bindsym $mod+e layout toggle split
+    # bindsym $mod+e layout toggle split
 
     # Make the current focus fullscreen
     bindsym $mod+f fullscreen
@@ -300,13 +306,23 @@ mode $exit {
     
         Return mode "default"
         Escape mode "default"
-        Caps_Lock   mode "default"
-        $mod+x mode "default"
     }
 }
 
 bindsym --to-code $mod+x mode $exit
 
+set $rmpc "[T]oggle, [P]revious, [N]ext"
+
+mode $rmpc {
+    bindsym {
+    t exec rmpc togglepause
+    n exec rmpc next
+    p exec rmpc prev
+    Return mode "default"
+    Escape mode "default"
+    }
+}
+bindsym $mod+m mode $rmpc
 #
 # Status Bar:
 #
