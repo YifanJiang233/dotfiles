@@ -32,7 +32,7 @@ config.font_rules = {
 		intensity = "Bold",
 		italic = false,
 		font = wezterm.font_with_fallback({
-			{ family = "JetBrains Mono",    weight = "Bold", stretch = "Normal", style = "Normal" },
+			{ family = "JetBrainsMono Nerd Font", weight = "Bold", stretch = "Normal", style = "Normal" },
 			{ family = "LXGW Bright Medium" },
 		}),
 	},
@@ -40,7 +40,7 @@ config.font_rules = {
 		intensity = "Bold",
 		italic = true,
 		font = wezterm.font_with_fallback({
-			{ family = "JetBrains Mono",    weight = "Bold", stretch = "Normal", style = "Italic" },
+			{ family = "JetBrainsMono Nerd Font", weight = "Bold", stretch = "Normal", style = "Italic" },
 			{ family = "LXGW Bright Medium" },
 		}),
 	},
