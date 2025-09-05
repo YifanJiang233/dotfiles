@@ -7,5 +7,9 @@ tdf = [
   { run = 'tdf -f true "$0"', desc = "Open pdf with tdf.", block = true, orphan = true },
 ]
 
+sioyek = [
+  { run = 'sioyek "$0"', desc = "Open pdf with sioyek.", block = true, orphan = true },
+]
+
 [open]
 prepend_rules = [{ name = "*.pdf", use = "tdf" }]
