@@ -27,7 +27,7 @@ tooltip {
   border: 1px solid rgba(100, 114, 125, 0.5);
 }
 tooltip label {
-  color: white;
+  color: @text;
 }
 
 #workspaces button {
@@ -51,8 +51,13 @@ tooltip label {
 }
 
 #mode {
+  color: @peach;
   background: transparent;
   /* border-bottom: 3px solid white; */
+}
+
+#bluetooth.connected {
+  color: @green;
 }
 
 #clock {

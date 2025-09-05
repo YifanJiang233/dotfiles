@@ -1,7 +1,7 @@
 {
     "layer": "top",
     "height": 30,
-    "modules-left": ["sway/workspaces", "sway/mode"],
+    "modules-left": ["sway/mode", "sway/workspaces"],
     "modules-center": ["sway/window"],
     "modules-right": ["bluetooth", "pulseaudio", "network", "battery", "clock"],
     "sway/window": {
@@ -17,7 +17,8 @@
         "format-icons": ["", "", "", "", ""]
     },
     "clock": {
-        "format": "{:%a %d %b %H:%M}"
+        "format": "{:%a %d %b %H:%M}",
+        "tooltip": false
     },
     "network": {
 	    // "interface": "wlp2s0f3",
@@ -35,7 +36,7 @@
     "pulseaudio": {
         "format": "{volume}% {icon}",
         "format-bluetooth": "{volume}% {icon}",
-        "format-muted": "",
+        "format-muted": "0% ",
         "format-icons": {
             "alsa_output.pci-0000_00_1f.3.analog-stereo": "",
             "alsa_output.pci-0000_00_1f.3.analog-stereo-muted": "",
@@ -54,8 +55,8 @@
 
      "bluetooth": {
 	    "format": "{status} ",
-	    "format-connected": "{device_alias} ",
-	    "format-connected-battery": "{device_alias} {device_battery_percentage}% ",
+	    "format-connected": "{num_connections} ",
+	    // "format-connected-battery": "{device_alias} {device_battery_percentage}% ",
 	    // "format-device-preference": [ "device1", "device2" ], // preference list deciding the displayed device
 	    "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
 	    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
