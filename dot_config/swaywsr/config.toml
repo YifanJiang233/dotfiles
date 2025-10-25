@@ -2,7 +2,8 @@
 
 [aliases]
 "org.wezfurlong.wezterm"      = "wezterm"
-"org.qutebrowser.qutebrowser" = "qutebrowser"
+"org.qutebrowser.qutebrowser" = "QuteBrowser"
+"org.nicotine_plus.Nicotine"  = "Nicotine"
 
 [general]
 separator = " ¦ "
