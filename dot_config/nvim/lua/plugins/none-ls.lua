@@ -8,7 +8,7 @@ return {
   },
   opts = function(_, opts)
     -- opts variable is the default configuration table for the setup function call
-    local null_ls = require "null-ls"
+    local null_ls = require("null-ls")
 
     -- Check supported formatters and linters
     -- https://github.com/nvimtools/none-ls.nvim/tree/main/lua/null-ls/builtins/formatting
@@ -20,9 +20,9 @@ return {
       -- Set a formatter
       -- null_ls.builtins.formatting.stylua,
       -- null_ls.builtins.formatting.prettier,
-      require("none-ls.formatting.latexindent").with {
+      require("none-ls.formatting.latexindent").with({
         extra_args = { "-g", "/dev/null" },
-      },
+      }),
       -- If you need to pass extra arguments to latexindent (e.g., a specific config file)
       -- null_ls.builtins.formatting.latexindent.with({
       --   extra_args = { "-l", vim.fn.expand("~/.latexindent/my_custom_settings.yaml") },

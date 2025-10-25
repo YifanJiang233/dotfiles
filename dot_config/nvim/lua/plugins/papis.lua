@@ -15,7 +15,8 @@ return {
 	config = function()
 		require("papis").setup({
 			-- Your configuration goes here
-			init_filetypes = { "tex", "bib", "markdown", "norg", "yaml" },
+			init_filetypes = { "tex", "bib", "markdown", "org", "yaml" },
+			vim.api.nvim_set_hl(0, "PapisResultsNotes", { link = "@property", default = true }),
 		})
 	end,
 }

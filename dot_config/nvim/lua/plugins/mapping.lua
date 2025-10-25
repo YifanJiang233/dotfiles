@@ -20,6 +20,8 @@ return {
 						"<cmd>Papis at-cursor show-popup<cr>",
 						desc = "Show Entry Info Under Cursor",
 					},
+					["<leader>a"] = { desc = "Open Org Agenda" },
+					["<leader>z"] = { desc = "Org Capture" },
 					-- quick save
 					-- ["<C-s>"] = { ":w!<cr>", desc = "Save File" },  -- change description but the same command
 				},

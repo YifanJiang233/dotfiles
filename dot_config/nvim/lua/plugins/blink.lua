@@ -28,13 +28,18 @@ return {
 		snippets = { preset = "luasnip" },
 		sources = {
 			-- enable the provider by default
-			default = { "vimtex", "snippets", per_filetype = { yaml = { "papis" } } },
+			default = { "vimtex", "snippets", "orgmode" },
 			-- configure the provider for your new source
 			providers = {
 				vimtex = {
 					name = "vimtex",
 					module = "blink.compat.source",
 					score_offset = 100,
+				},
+				orgmode = {
+					name = "orgmode",
+					module = "orgmode.org.autocompletion.blink",
+					fallbacks = { "buffer" },
 				},
 			},
 		},

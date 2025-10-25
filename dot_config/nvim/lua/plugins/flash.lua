@@ -1,8 +1,8 @@
 return {
-  "folke/flash.nvim",
-  opts = {
-    label = {
-      uppercase = false,
-    },
-  },
+	"folke/flash.nvim",
+	opts = {
+		label = {
+			uppercase = false,
+		},
+	},
 }

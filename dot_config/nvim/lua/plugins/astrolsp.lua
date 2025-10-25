@@ -10,8 +10,8 @@ return {
 	opts = {
 		-- Configuration table of features provided by AstroLSP
 		features = {
-			codelens = true, -- enable/disable codelens refresh on start
-			inlay_hints = false, -- enable/disable inlay hints on start
+			codelens = true,     -- enable/disable codelens refresh on start
+			inlay_hints = true,  -- enable/disable inlay hints on start
 			semantic_tokens = true, -- enable/disable semantic token highlighting
 		},
 		-- customize lsp formatting options
@@ -23,7 +23,7 @@ return {
 					-- "go",
 				},
 				ignore_filetypes = { -- disable format on save for specified filetypes
-					"tex",
+					-- "tex",
 				},
 			},
 			disabled = { -- disable formatting capabilities for the listed language servers
@@ -36,7 +36,10 @@ return {
 			-- end
 		},
 		-- enable servers that you already have installed without mason
-		servers = {},
+		servers = {
+			-- "harper_ls",
+			"ltex_plus",
+		},
 		-- customize language server configuration options passed to `lspconfig`
 		---@diagnostic disable: missing-fields
 		config = {
@@ -44,6 +47,22 @@ return {
 			basedpyright = {
 				enabled = false,
 			},
+			-- harper_ls = {
+			-- 	filetypes = { "markdown", "text", "md", "tex", "latex" },
+			-- 	settings = {
+			-- 		["harper-ls"] = {
+			-- 			linters = {
+			-- 				SpellCheck = true,
+			-- 				SentenceCapitalization = false,
+			-- 				LongSentences = false,
+			-- 				Spaces = false,
+			-- 				CommaFixes = false,
+			-- 			},
+			-- 			maxFileLength = 1200000000,
+			-- 			userDictPath = vim.fn.expand("~/.config/harper-ls/dictionary.txt"),
+			-- 		},
+			-- 	},
+			-- },
 		},
 		-- customize how language servers are attached
 		handlers = {
@@ -96,7 +115,7 @@ return {
 					desc = "Toggle LSP semantic highlight (buffer)",
 					cond = function(client)
 						return client.supports_method("textDocument/semanticTokens/full")
-							and vim.lsp.semantic_tokens ~= nil
+								and vim.lsp.semantic_tokens ~= nil
 					end,
 				},
 			},

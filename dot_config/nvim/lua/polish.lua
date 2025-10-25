@@ -36,3 +36,18 @@ vim.api.nvim_create_autocmd("User", {
 	desc = "Clean files on exit.",
 	command = [[ call vimtex#compiler#clean(0) ]],
 })
+
+-- Create an autocommand group to ensure the command isn't duplicated
+local augroup_org_files = vim.api.nvim_create_augroup("OrgFileSettings", { clear = true })
+
+-- Create the autocommand to turn off wrapping for org files
+vim.api.nvim_create_autocmd("FileType", {
+	group = augroup_org_files,
+	pattern = "org",
+	callback = function()
+		-- Use vim.opt_local to set the option for the current buffer only
+		vim.opt_local.wrap = false
+		vim.opt_local.conceallevel = 2
+		vim.opt_local.concealcursor = "nc"
+	end,
+})

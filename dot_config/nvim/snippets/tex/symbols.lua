@@ -13,13 +13,23 @@ end
 
 return {
 	s(
-		{ trig = "*", name = "subscript", snippetType = "autosnippet", conditon = in_math },
-		fmta("^{<>}", {
+		{
+			trig = "([^%{%,])*",
+			name = "supscript",
+			snippetType = "autosnippet",
+			wordTrig = false,
+			regTrig = true,
+			conditon = in_math,
+		},
+		fmta("<>^{<>}", {
+			f(function(_, snip)
+				return snip.captures[1]
+			end),
 			i(1),
 		})
 	),
 	s(
-		{ trig = "_", name = "subscript", snippetType = "autosnippet", conditon = in_math },
+		{ trig = "_", name = "subscript", snippetType = "autosnippet", wordTrig = false, conditon = in_math },
 		fmta("_{<>}", {
 			i(1),
 		})

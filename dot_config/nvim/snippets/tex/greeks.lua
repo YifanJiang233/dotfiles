@@ -31,7 +31,7 @@ return {
 	s(
 		{ trig = ";d", desc = "delta", snippetType = "autosnippet", condition = in_math },
 		fmta("<>", {
-			t("\\vardelta"),
+			t("\\delta"),
 		})
 	),
 	s(
@@ -62,7 +62,7 @@ return {
 	s(
 		{ trig = ";k", desc = "kappa", snippetType = "autosnippet", condition = in_math },
 		fmta("<>", {
-			t("kappa"),
+			t("\\kappa"),
 		})
 	),
 	s(
@@ -183,6 +183,12 @@ return {
 		{ trig = ";F", desc = "Phi", snippetType = "autosnippet", condition = in_math },
 		fmta("<>", {
 			t("\\Phi"),
+		})
+	),
+	s(
+		{ trig = ";Y", name = "Psi", snippetType = "autosnippet", { conditon = in_math } },
+		fmta("<>", {
+			t("\\Psi"),
 		})
 	),
 	s(
