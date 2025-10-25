@@ -37,3 +37,8 @@ desc = "Copy files using rsync"
 on   = "M"
 run  = "plugin mount"
 desc = "Run mount manager"
+
+[[mgr.prepend_keymap]]
+on   = ["C"]
+run  = "plugin ouch"
+desc = "Compress with ouch"
