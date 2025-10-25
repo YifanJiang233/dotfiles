@@ -1,0 +1,35 @@
+[settings]
+default-library = arXivist
+formatter = bbt
+ref-format = bbt:
+file-browser = yazi
+opentool = sioyek
+editor = nvim
+use-git = False
+database-backend = papis
+bibtex-unicode = False
+add-folder-name = {doc[title]}
+add-file-name = {doc[title]}
+doc-paths-word-separator = _
+citations-file-name = citations.yaml
+add-confirm = True
+notes-name = notes.org
+
+[arXivist]
+dir = /home/yifan/Library/arXivist
+
+[books]
+dir = /home/yifan/Library/books
+
+[tui]
+editmode = vi
+move_down_key = c-j
+move_up_key = c-k
+options_list.unselected_margin_style = 
+
+
+[plugins.bbt]
+title-case = lower
+author-case = lower
+title-words = 1
+full-year = True
