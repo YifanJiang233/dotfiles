@@ -3,3 +3,5 @@
 	email = yifanjiang233@gmail.com
 [commit]
 	template = $HOME/.config/git/commit_template.txt
+[init]
+	defaultBranch = main
