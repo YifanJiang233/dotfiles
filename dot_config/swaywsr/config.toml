@@ -1,9 +1,11 @@
 [icons]
 
 [aliases]
-"org.wezfurlong.wezterm"      = "wezterm"
-"org.qutebrowser.qutebrowser" = "QuteBrowser"
-"org.nicotine_plus.Nicotine"  = "Nicotine"
+"org.wezfurlong.wezterm"               = "wezterm"
+"org.qutebrowser.qutebrowser"          = "QuteBrowser"
+"org.nicotine_plus.Nicotine"           = "Nicotine"
+"me-him188-ani-app-desktop-AniDesktop" = "Animeko"
+"glide-glide"                          = "glide"
 
 [general]
 separator = " ¦ "

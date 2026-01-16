@@ -27,6 +27,9 @@ if os.path.exists(config.configdir / "theme.py"):
 # hide the title bar
 c.window.hide_decoration = True
 
+# set download location
+c.downloads.location.directory = "$HOME/Downloads/"
+
 # key bindings
 
 c.bindings.commands = {
@@ -48,7 +51,9 @@ c.bindings.commands = {
         ";w": "spawn --userscript bw --password-only",
         ";u": "spawn --userscript bw --username-only",
         ";v": "config-cycle content.proxy system socks://127.0.0.1:1080",
-        "cs": "config-source"
+        "cs": "config-source",
+        "cm": "quickmark-del",
+        "cM": "bookmark-del"
     },
     "insert": {
         "<Ctrl-i>": "edit-text",
@@ -69,11 +74,11 @@ c.bindings.commands = {
 # search engines
 c.url.searchengines = {
     "DEFAULT": "https://google.com/search?q={}",
-    "google": "https://google.com/search?q={}",
-    "github": "https://github.com/search?q={}",
-    "scholar": "https://scholar.google.com/scholar?q={}",
-    "arxiv": "https://arxiv.org/search/?query={}&searchtype=all",
-    "arch": "https://wiki.archlinux.org/?search={}"
+    "g": "https://google.com/search?q={}",
+    "gh": "https://github.com/search?q={}",
+    "gs": "https://scholar.google.com/scholar?q={}",
+    "a": "https://arxiv.org/search/?query={}&searchtype=all",
+    "aw": "https://wiki.archlinux.org/?search={}"
 }
 
 # set tab styles
@@ -116,6 +121,7 @@ c.content.pdfjs = True
 
 # auto save session
 c.auto_save.session = True
+c.session.lazy_restore = True
 
 {{ if eq .chezmoi.os "darwin"}}
 # MacOS specific configurations
