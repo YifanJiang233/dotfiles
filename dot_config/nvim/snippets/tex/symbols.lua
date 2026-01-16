@@ -14,7 +14,7 @@ end
 return {
 	s(
 		{
-			trig = "([^%{%,])*",
+			trig = "([^%(%{%,])*",
 			name = "supscript",
 			snippetType = "autosnippet",
 			wordTrig = false,
@@ -45,5 +45,12 @@ return {
 				i(2),
 			}
 		)
+	),
+	s(
+		{ trig = ";<", name = "angle bracket", snippetType = "autosnippet", { conditon = in_math } },
+		fmta("\\langle <>, <> \\rangle", {
+			i(1),
+			i(2),
+		})
 	),
 }

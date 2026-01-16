@@ -120,6 +120,12 @@ return {
 		})
 	),
 	s(
+		{ trig = ";vf", desc = "varphi", snippetType = "autosnippet", condition = in_math },
+		fmta("<>", {
+			t("\\varphi"),
+		})
+	),
+	s(
 		{ trig = ";c", desc = "chi", snippetType = "autosnippet", condition = in_math },
 		fmta("<>", {
 			t("\\chi"),
