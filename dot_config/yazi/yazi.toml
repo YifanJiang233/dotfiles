@@ -3,16 +3,14 @@ max_width  = 1000
 max_height = 2000
 
 [opener]
-tdf = [
-  { run = 'tdf -f true "$0"', desc = "Open pdf with tdf.", block = true, orphan = true },
-]
+tdf = [{ run = 'tdf %s -f', desc = "Open pdf with tdf.", block = true }]
 
 sioyek = [
-  { run = 'sioyek "$0"', desc = "Open pdf with sioyek.", block = true, orphan = true },
+  { run = 'sioyek %s', desc = "Open pdf with sioyek.", block = true, orphan = true },
 ]
 
 [open]
-prepend_rules = [{ name = "*.pdf", use = "tdf" }]
+prepend_rules = [{ url = "*.pdf", use = ["tdf", "sioyek"] }]
 
 [plugin]
 prepend_previewers = [

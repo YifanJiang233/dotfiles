@@ -1,24 +1,29 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "c0ad8a3"
-hash = "a7ab702e1ef0c097defbc976ed34c186"
+rev = "68f7d48"
+hash = "56fdabc96fc1f4d53c96eb884b02a5be"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-paste"
-rev = "c0ad8a3"
-hash = "6fe47945aff6571d76f3beb65099ad7a"
+rev = "68f7d48"
+hash = "75fd60b2df7115e0a6ca31a6a804d320"
 
 [[plugin.deps]]
 use = "GianniBYoung/rsync"
-rev = "55631aa"
-hash = "fb38b3c546e6594961b335cee4eaa340"
+rev = "14d2828"
+hash = "7394430ba473dce1023721622438bf3d"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:mount"
-rev = "d7588f6"
-hash = "e1de3054c0d1a2d8dc6f007eadc0fa31"
+rev = "68f7d48"
+hash = "e2d4bfccf31e5ab05f46fee4797c5215"
+
+[[plugin.deps]]
+use = "ndtoan96/ouch"
+rev = "cfb9140"
+hash = "b5067143415bd2d46c0dfa57319ddcef"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
-rev = "657aaf3"
-hash = "662a1b35b98668d4f75746eb37af7fd"
+rev = "f9ae9f2"
+hash = "5dda92e60fca4f206874ee187b3dfb67"
