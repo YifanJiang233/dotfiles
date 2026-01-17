@@ -1,0 +1,51 @@
+# Created by newuser for 5.9
+
+# ~/.zshrc
+# Lines configured by zsh-newuser-install
+#
+# End of lines configured by zsh-newuser-install
+#
+# The following lines were added by compinstall
+# zstyle :compinstall filename '/home/yifan/.zshrc'
+# autoload -Uz compinit
+# compinit
+#
+# End of lines added by compinstall
+#
+
+zstyle ':antidote:bundle' use-friendly-names 'yes'
+source /usr/share/zsh-antidote/antidote.zsh
+
+antidote load
+# evaluations
+eval "$(atuin init zsh)"
+eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
+eval "$(uv generate-shell-completion zsh)"
+eval "$(uvx --generate-shell-completion zsh)"
+
+# yazi
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXX")"
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		cd -- "$cwd" || exit
+	fi
+	rm -f -- "$tmp"
+}
+
+function zvm_after_init() {
+	# fzf keybindings
+	#   [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+	#
+	#     # atuin search
+	zvm_bindkey viins '^R' atuin-search
+	zvm_bindkey vicmd '^R' atuin-search
+}
+
+# alias
+alias yays="yay -S --needed"
+alias yayr="yay -Rns"
+alias gt='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519 && gitui && ssh-agent -k'
+alias ccd="chezmoi cd"
+alias ls="eza --icons --group-directories-first"
