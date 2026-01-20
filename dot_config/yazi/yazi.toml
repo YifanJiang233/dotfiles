@@ -12,6 +12,11 @@ prepend_rules = [{ url = "*.pdf", use = ["tdf", "sioyek"] }]
 
 [plugin]
 prepend_previewers = [
+  # Directory previewer
+  { url = "*/", run = 'piper -- eza -TL=2 --color=always --icons=always --group-directories-first --no-quotes "$1"' },
+  # Notebook previewer
+  { url = "*.ipynb", run = 'piper -- nbpreview --no-paging --nerd-font --decorated --no-files --unicode --color --color-system=standard --theme=ansi_dark "$1"' },
+  # { url = "*.ipynb", run = "nbpreview" },
   # Archive previewer
   { mime = "application/*zip", run = "ouch" },
   { mime = "application/x-tar", run = "ouch" },

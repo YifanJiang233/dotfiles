@@ -23,6 +23,16 @@ use = "ndtoan96/ouch"
 rev = "cfb9140"
 hash = "b5067143415bd2d46c0dfa57319ddcef"
 
+[[plugin.deps]]
+use = "yazi-rs/plugins:piper"
+rev = "de33976"
+hash = "76ea4ff62db6ebe62e4653c2de95cbd"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:toggle-pane"
+rev = "de33976"
+hash = "8a7c58225816a163a6e8730c0adafbc8"
+
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
 rev = "f9ae9f2"
