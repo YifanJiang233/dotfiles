@@ -1,0 +1,8 @@
+precompact
+Wasserstein
+Monge
+distributionally
+HJBI
+Itô
+ansatz
+Wasserstein

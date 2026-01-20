@@ -12,6 +12,6 @@ return {
 		-- The setup will normalice it running vim.fs.normalize(path).
 		-- e.g. subfolder in project root or cwd: ".ltex"
 		-- e.g. cross project settings:  vim.fn.expand("~") .. "/.local/share/ltex"
-		path = ".ltex",
+		path = vim.fn.expand("~") .. "/.config/ltex",
 	},
 }
