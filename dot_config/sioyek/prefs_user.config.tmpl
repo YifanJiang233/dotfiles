@@ -17,7 +17,6 @@ highlight_color_g          #f9e2af
 
 status_bar_color           #1e1e2e
 status_bar_text_color      #cdd6f4
-status_bar_font_size       18
 
 custom_background_color    #1e1e2e
 custom_text_color          #cdd6f4
@@ -29,11 +28,21 @@ ui_selected_background_color #585b70
 
 keyboard_select_background_color 0.19 0.19 0.27 0.8
 keyboard_select_text_color 0.80 0.84 0.96 1
-keyboard_select_font_size 20
 
 # font setting
 ui_font JetBrains Mono
+
+{{- if eq .chezmoi.os "darwin"}}
+font_size 10
+status_bar_font_size       12
+keyboard_select_font_size 14
+{{ end -}}
+
+{{- if eq .chezmoi.os "linux"}}
 font_size 15
+status_bar_font_size       18
+keyboard_select_font_size 20
+{{ end -}}
 
 # page separator
 page_separator_width 0

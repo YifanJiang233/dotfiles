@@ -24,8 +24,6 @@ if not os.path.exists(config.configdir / "theme.py"):
 if os.path.exists(config.configdir / "theme.py"):
     import theme
     theme.setup(c, 'mocha', True)
-# hide the title bar
-c.window.hide_decoration = True
 
 # set download location
 c.downloads.location.directory = "$HOME/Downloads/"
@@ -104,13 +102,10 @@ c.hints.uppercase = True
 c.colors.hints.bg = "#181825"
 c.colors.hints.fg = "#f9e2af"
 c.colors.hints.match.fg = "#f38ba8"
-c.fonts.hints = "bold 18px JetBrains Mono"
+
 
 # set global font
-c.fonts.default_size = "18px"
 c.fonts.default_family = "JetBrains Mono"
-c.fonts.tabs.selected =  "Bold 20px LXGW Bright"
-c.fonts.tabs.unselected =  "20px LXGW Bright"
 
 
 # enable smooth scolling
@@ -126,10 +121,18 @@ c.session.lazy_restore = True
 {{ if eq .chezmoi.os "darwin"}}
 # MacOS specific configurations
 
+# set font size
+c.fonts.default_size = "12px"
+c.fonts.hints = "bold 10px JetBrains Mono"
+c.fonts.tabs.selected =  "Bold 15px LXGW Bright"
+c.fonts.tabs.unselected =  "15px LXGW Bright"
+
 # Hint links and open the selected link's URL in IINA
 c.bindings.commands["normal"][";v"] = "hint links spawn open -a IINA {hint-url}"
 c.bindings.commands["normal"][";V"] = "spawn open -a IINA {url}"
 
+
+c.zoom.default = 75
 # set external editor
 c.editor.command = [
     "/Applications/WezTerm.app/Contents/MacOS/wezterm-gui",
@@ -146,6 +149,16 @@ c.editor.command = [
 
 {{ if eq .chezmoi.os "linux"}}
 # Linux specific configurations
+
+# set font size
+c.fonts.default_size = "18px"
+c.fonts.hints = "bold 18px JetBrains Mono"
+c.fonts.tabs.selected =  "Bold 20px LXGW Bright"
+c.fonts.tabs.unselected =  "20px LXGW Bright"
+
+# hide the title bar
+c.window.hide_decoration = True
+
 c.zoom.default = 125
 c.editor.command = [
     "wezterm",

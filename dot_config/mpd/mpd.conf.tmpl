@@ -347,15 +347,18 @@ input {
 #
 # An example of an OS X output:
 #
-#audio_output {
-#	type		"osx"
-#	name		"My OS X Device"
+{{ if eq .chezmoi.os "darwin"}}
+audio_output {
+	type		"osx"
+	name		"Mac mini"
 ##	device		"Built-in Output"	# optional
 ##	channel_map      "-1,-1,0,1"	# optional
-#}
+}
+{{ end }}
 #
 ## Example "pipe" output:
 #
+{{ if eq .chezmoi.os "linux"}}
 audio_output {
 	type		"pipewire"
 	name		"PipeWire"
@@ -366,6 +369,7 @@ audio_output {
 #	command		"nc example.org 8765"
 #	format		"44100:16:2"
 }
+{{ end }}
 #
 ## An example of a null output (for no audio output):
 #
