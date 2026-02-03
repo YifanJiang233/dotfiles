@@ -297,6 +297,18 @@ mode "Resize" {
 }
 bindsym $mod+r mode "Resize"
 
+
+# Screen off mode 
+mode "Screen Off" {
+    # Bind a specific key to turn screens ON and exit the mode
+    bindsym Escape mode "default", exec swaymsg "output * dpms on"
+    bindsym Return mode "default", exec swaymsg "output * dpms on"
+}
+
+# Bind a key to Enter this mode and turn screens OFF
+bindsym $mod+Shift+z exec swaymsg "output * dpms off", mode "Screen Off"
+
+
 #
 # exit mode
 #
