@@ -4,19 +4,20 @@
 
 ---@type LazySpec
 return {
-	"AstroNvim/astrocommunity",
-	{ import = "astrocommunity.colorscheme.catppuccin" },
-	{ import = "astrocommunity.markdown-and-latex.vimtex" },
-	{ import = "astrocommunity.motion.flash-nvim" },
-	{ import = "astrocommunity.pack.lua" },
-	{ import = "astrocommunity.pack.rust" },
-	{ import = "astrocommunity.pack.go" },
-	{ import = "astrocommunity.pack.yaml" },
-	{ import = "astrocommunity.pack.toml" },
-	{ import = "astrocommunity.pack.python-ruff" },
-	-- { import = "astrocommunity.pack.chezmoi" },
-	{ import = "astrocommunity.pack.docker" },
-	{ import = "astrocommunity.pack.bash" },
-	-- { import = "astrocommunity.completion.avante-nvim" },
-	-- import/override with your plugins folder
+  "AstroNvim/astrocommunity",
+  { import = "astrocommunity.colorscheme.catppuccin" },
+  { import = "astrocommunity.markdown-and-latex.vimtex" },
+  { import = "astrocommunity.motion.flash-nvim" },
+  { import = "astrocommunity.pack.lua" },
+  { import = "astrocommunity.pack.rust" },
+  { import = "astrocommunity.pack.go" },
+  { import = "astrocommunity.pack.yaml" },
+  { import = "astrocommunity.pack.toml" },
+  { import = "astrocommunity.pack.python.base" },
+  { import = "astrocommunity.pack.python.basedpyright" },
+  { import = "astrocommunity.pack.python.ruff" },
+  -- { import = "astrocommunity.pack.chezmoi" },
+  { import = "astrocommunity.pack.docker" },
+  { import = "astrocommunity.pack.bash" },
+  -- import/override with your plugins folder
 }
