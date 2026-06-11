@@ -10,9 +10,3 @@ jeffreytse/zsh-vi-mode
 atuinsh/atuin
 
 # empty lines are skipped
-
-
-# frameworks like oh-my-zsh are supported
-ohmyzsh/ohmyzsh path:plugins/colored-man-pages
-ohmyzsh/ohmyzsh path:plugins/magic-enter
-

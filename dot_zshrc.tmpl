@@ -13,25 +13,71 @@
 # End of lines added by compinstall
 #
 
+# Paths
+ANTIDOTE_HOME="${ANTIDOTE_HOME:-$HOME/.cache/antidote}"
+ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+
+{{- if eq .chezmoi.os "darwin" }}
+ANTIDOTE_SOURCE="/opt/homebrew/opt/antidote/share/antidote/antidote.zsh"
+{{- else if eq .chezmoi.os "linux" }}
+ANTIDOTE_SOURCE="/usr/share/zsh-antidote/antidote.zsh"
+{{- end }}
+ANTIDOTE_PLUGINS="$HOME/.zsh_plugins.txt"
+ANTIDOTE_BUNDLE="$HOME/.zsh_plugins.zsh"
+ZSH_COMPLETION_CACHE_DIR="$ZSH_CACHE_DIR/completions"
+
+# Helpers
+function _load_plugins() {
+	# Antidote can generate a plain zsh file. Sourcing that file is much
+	# faster than asking antidote to resolve plugins on every shell startup.
+	if [[ ! -r "$ANTIDOTE_BUNDLE" || "$ANTIDOTE_PLUGINS" -nt "$ANTIDOTE_BUNDLE" ]]; then
+		[[ -r "$ANTIDOTE_SOURCE" ]] && source "$ANTIDOTE_SOURCE"
+		[[ -n "${functions[antidote]-}" ]] && antidote bundle <"$ANTIDOTE_PLUGINS" >|"$ANTIDOTE_BUNDLE"
+	fi
+
+	[[ -r "$ANTIDOTE_BUNDLE" ]] && source "$ANTIDOTE_BUNDLE"
+}
+
+function _source_init() {
+	local command_name="$1"
+	shift
+
+	[[ -n "${commands[$command_name]-}" ]] && source <("$@")
+}
+
+function _source_completion() {
+	local name="$1"
+	local command_name="$2"
+	local cached_completion="$ZSH_COMPLETION_CACHE_DIR/$name"
+	shift 2
+
+	[[ -n "${commands[$command_name]-}" ]] || return
+	[[ -d "$ZSH_COMPLETION_CACHE_DIR" ]] || mkdir -p "$ZSH_COMPLETION_CACHE_DIR"
+
+	if [[ ! -r "$cached_completion" || "${commands[$command_name]}" -nt "$cached_completion" ]]; then
+		"$@" >|"$cached_completion" 2>/dev/null
+	fi
+
+	[[ -r "$cached_completion" ]] && source "$cached_completion"
+}
+
+# Plugins
 zstyle ':antidote:bundle' use-friendly-names 'yes'
+_load_plugins
 
-{{- if eq .chezmoi.os "darwin"}}
-source $(brew --prefix)/opt/antidote/share/antidote/antidote.zsh
-{{ end -}}
+# Prompt, navigation, and runtime managers
+_source_init starship starship init zsh
+_source_init zoxide zoxide init zsh
+_source_init fnm fnm env --shell zsh
 
-{{- if eq .chezmoi.os "linux"}}
-source /usr/share/zsh-antidote/antidote.zsh
-{{ end -}}
+# Generated completions
+_source_completion "_uv" "uv" uv generate-shell-completion zsh
+_source_completion "_uvx" "uvx" uvx --generate-shell-completion zsh
+{{- if eq .chezmoi.os "darwin" }}
+_source_completion "_mole" "mole" mole completion zsh
+{{- end }}
 
-antidote load
-# evaluations
-eval "$(atuin init zsh)"
-eval "$(starship init zsh)"
-eval "$(zoxide init zsh)"
-eval "$(uv generate-shell-completion zsh)"
-eval "$(uvx --generate-shell-completion zsh)"
-
-# yazi
+# Functions
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXX")"
 	yazi "$@" --cwd-file="$tmp"
@@ -41,6 +87,7 @@ function y() {
 	rm -f -- "$tmp"
 }
 
+# Hooks
 function zvm_after_init() {
 	# fzf keybindings
 	#   [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -50,7 +97,7 @@ function zvm_after_init() {
 	zvm_bindkey vicmd '^R' atuin-search
 }
 
-# alias
+# Aliases
 alias yays="yay -S --needed"
 alias yayr="yay -Rns"
 alias gt='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519 && gitui && ssh-agent -k'
