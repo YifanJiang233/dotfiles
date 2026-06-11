@@ -17,8 +17,8 @@
 // Try typing `glide.` and see what you can do!
 
 // scroll half of the page
-glide.prefs.set("toolkit.scrollbox.pagescroll.maxOverlapLines", 9999999999);
-glide.prefs.set("toolkit.scrollbox.pagescroll.maxOverlapPercent", 50);
+// glide.prefs.set("toolkit.scrollbox.pagescroll.maxOverlapLines", 9999999999);
+// glide.prefs.set("toolkit.scrollbox.pagescroll.maxOverlapPercent", 50);
 
 // keybindings
 glide.keymaps.set("normal", "x", "tab_close");

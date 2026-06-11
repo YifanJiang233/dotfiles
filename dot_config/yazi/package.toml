@@ -1,39 +1,39 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "68f7d48"
-hash = "56fdabc96fc1f4d53c96eb884b02a5be"
+rev = "598cdb6"
+hash = "187cc58ba7ac3befd49c342129e6f1b6"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-paste"
-rev = "68f7d48"
-hash = "75fd60b2df7115e0a6ca31a6a804d320"
+rev = "598cdb6"
+hash = "3f8d49413bc8691b4c652eb417a20178"
 
 [[plugin.deps]]
 use = "GianniBYoung/rsync"
-rev = "14d2828"
-hash = "7394430ba473dce1023721622438bf3d"
+rev = "44f6979"
+hash = "9e85283824277bf66011a3977d266edb"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:mount"
-rev = "68f7d48"
-hash = "e2d4bfccf31e5ab05f46fee4797c5215"
+rev = "598cdb6"
+hash = "e3260d0b1feded8c8e3ae3afa1169e30"
 
 [[plugin.deps]]
 use = "ndtoan96/ouch"
-rev = "cfb9140"
-hash = "b5067143415bd2d46c0dfa57319ddcef"
+rev = "406ce6c"
+hash = "f5afc904d5106ee368c8aa2ded43bd74"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
-rev = "de33976"
-hash = "76ea4ff62db6ebe62e4653c2de95cbd"
+rev = "598cdb6"
+hash = "d99cfbc3812e7738505f9e4bedb759cd"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "de33976"
-hash = "8a7c58225816a163a6e8730c0adafbc8"
+rev = "598cdb6"
+hash = "9c7987da2d2a2120dac33abb64132004"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
-rev = "f9ae9f2"
-hash = "5dda92e60fca4f206874ee187b3dfb67"
+rev = "0f9204b"
+hash = "7dfe41c9c3d9be76da8a844263d0bbed"
