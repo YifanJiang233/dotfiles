@@ -17,8 +17,8 @@
 // Try typing `glide.` and see what you can do!
 
 // scroll half of the page
-// glide.prefs.set("toolkit.scrollbox.pagescroll.maxOverlapLines", 9999999999);
-// glide.prefs.set("toolkit.scrollbox.pagescroll.maxOverlapPercent", 50);
+glide.prefs.set("toolkit.scrollbox.pagescroll.maxOverlapLines", 9999999999);
+glide.prefs.set("toolkit.scrollbox.pagescroll.maxOverlapPercent", 50);
 
 // keybindings
 glide.keymaps.set("normal", "x", "tab_close");
@@ -35,3 +35,5 @@ glide.keymaps.set(
 );
 glide.keymaps.set("command", "<c-j>", "commandline_focus_next");
 glide.keymaps.set("command", "<c-k>", "commandline_focus_back");
+glide.keymaps.set("normal", "<c-u>", "scroll_page_up");
+glide.keymaps.set("normal", "<c-d>", "scroll_page_down");
