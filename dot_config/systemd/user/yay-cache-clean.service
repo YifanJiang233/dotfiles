@@ -1,0 +1,9 @@
+[Unit]
+Description=Clean old and uninstalled AUR package build cache
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=-/bin/sh -c 'for d in "$HOME/.cache/yay/"*/; do [ -d "$d" ] && /usr/bin/paccache -rk2 -c "$d" 2>/dev/null; done; true'
+ExecStart=-/bin/sh -c 'for d in "$HOME/.cache/yay/"*/; do [ -d "$d" ] && /usr/bin/paccache -ruk0 -c "$d" 2>/dev/null; done; true'
+ExecStart=/usr/bin/yay -Sc --aur --noconfirm

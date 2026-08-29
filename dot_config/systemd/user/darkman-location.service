@@ -1,0 +1,13 @@
+[Unit]
+Description=Update darkman geographical coordinates via IP geolocation
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/update-darkman-location.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

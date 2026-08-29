@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# Darkman passes the active appearance as the first argument. Mako's systemd
+# service calls this without an argument to synchronize after every start.
+active_theme=${1:-}
+if [ -z "$active_theme" ]; then
+    active_theme=$(darkman get 2>/dev/null) || active_theme=dark
+elif ! systemctl --user is-active --quiet mako.service; then
+    # Theme hooks style Mako but never start it; systemd owns its lifecycle.
+    exit 0
+fi
+
+case "$active_theme" in
+    dark)
+        other_theme=light
+        ;;
+    light)
+        other_theme=dark
+        ;;
+    *)
+        exit 0
+        ;;
+esac
+
+makoctl mode -a "$active_theme" -r "$other_theme"

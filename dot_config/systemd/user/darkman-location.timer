@@ -1,0 +1,10 @@
+[Unit]
+Description=Timer to check and update darkman location coordinates while traveling
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=4h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

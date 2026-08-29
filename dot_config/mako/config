@@ -1,0 +1,57 @@
+# Mako minimalist configuration
+# Theme: Catppuccin Mocha/Latte, selected by Darkman
+
+font=JetBrains Mono 12
+border-size=2
+border-radius=0
+margin=10
+padding=15
+width=300
+height=100
+max-icon-size=64
+layer=top
+anchor=top-right
+
+group-by=app-name
+max-visible=3
+max-history=5
+
+ignore-timeout=1
+default-timeout=5000
+format=<b>%s</b>\n%b
+
+[urgency=low]
+default-timeout=3000
+
+[urgency=critical]
+default-timeout=12000
+
+[mode=dark]
+background-color=#1e1e2ee6
+text-color=#cdd6f4
+border-color=#b4befe
+progress-color=over #585b70
+
+[mode=dark urgency=low]
+border-color=#313244
+
+[mode=dark urgency=normal]
+border-color=#b4befe
+
+[mode=dark urgency=critical]
+border-color=#fab387
+
+[mode=light]
+background-color=#eff1f5e6
+text-color=#4c4f69
+border-color=#7287fd
+progress-color=over #acb0be
+
+[mode=light urgency=low]
+border-color=#ccd0da
+
+[mode=light urgency=normal]
+border-color=#7287fd
+
+[mode=light urgency=critical]
+border-color=#fe640b

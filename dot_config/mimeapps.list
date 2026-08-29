@@ -1,0 +1,28 @@
+[Default Applications]
+inode/directory=yazi-floating.desktop
+application/pdf=sioyek.desktop
+x-scheme-handler/http=userapp-Glide-LM39T3.desktop
+x-scheme-handler/https=userapp-Glide-LM39T3.desktop
+x-scheme-handler/chrome=userapp-Glide-LM39T3.desktop
+text/html=userapp-Glide-LM39T3.desktop
+application/x-extension-htm=userapp-Glide-LM39T3.desktop
+application/x-extension-html=userapp-Glide-LM39T3.desktop
+application/x-extension-shtml=userapp-Glide-LM39T3.desktop
+application/xhtml+xml=userapp-Glide-LM39T3.desktop
+application/x-extension-xhtml=userapp-Glide-LM39T3.desktop
+application/x-extension-xht=userapp-Glide-LM39T3.desktop
+x-scheme-handler/antigravity=antigravity.desktop
+x-scheme-handler/codex=chatgpt.desktop
+
+[Added Associations]
+inode/directory=yazi-floating.desktop;
+x-scheme-handler/http=userapp-Glide-LM39T3.desktop;glide-browser-bin.desktop;
+x-scheme-handler/https=userapp-Glide-LM39T3.desktop;glide-browser-bin.desktop;
+x-scheme-handler/chrome=userapp-Glide-LM39T3.desktop;glide-browser-bin.desktop;
+text/html=glide-browser-bin.desktop;userapp-Glide-LM39T3.desktop;
+application/x-extension-htm=glide-browser-bin.desktop;userapp-Glide-LM39T3.desktop;
+application/x-extension-html=glide-browser-bin.desktop;userapp-Glide-LM39T3.desktop;
+application/x-extension-shtml=glide-browser-bin.desktop;userapp-Glide-LM39T3.desktop;
+application/xhtml+xml=glide-browser-bin.desktop;userapp-Glide-LM39T3.desktop;
+application/x-extension-xhtml=glide-browser-bin.desktop;userapp-Glide-LM39T3.desktop;
+application/x-extension-xht=glide-browser-bin.desktop;userapp-Glide-LM39T3.desktop;

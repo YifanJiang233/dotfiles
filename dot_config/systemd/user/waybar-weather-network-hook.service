@@ -1,0 +1,13 @@
+[Unit]
+Description=Waybar weather network reconnection event listener
+PartOf=sway-session.target
+After=sway-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.config/waybar/network-hook.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=sway-session.target

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+battery=/sys/class/power_supply/BAT0
+capacity=$(sed -n '1p' "$battery/capacity") || exit 1
+status=$(sed -n '1p' "$battery/status") || exit 1
+
+case "$capacity" in
+    ''|*[!0-9]*)
+        exit 1
+        ;;
+esac
+
+[ "$status" = Discharging ] || exit 0
+
+notify-send \
+    --app-name=Battery \
+    --urgency=critical \
+    --icon=battery-caution-symbolic \
+    "Battery low -- ${capacity}%" \
+    "Connect charger"
