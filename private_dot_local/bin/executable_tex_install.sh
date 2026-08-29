@@ -16,7 +16,7 @@ STY_FILE="$1.sty"
 PACKAGE_NAME_INPUT="$1"
 
 # --- Main Script Loop with Retry Logic ---
-RETRY_DELAY=45
+RETRY_DELAY=10
 MAX_RETRIES=3
 retries=0
 
@@ -28,7 +28,7 @@ while [[ $retries -le $MAX_RETRIES ]]; do
 
     if [[ $SEARCH_SUCCESS -eq 0 && -n "$PACKAGE_INFO" ]]; then
         # Successfully found package, now extract name
-        PACKAGE_NAME=$(echo "$PACKAGE_INFO" | grep -oP 'texmf-dist/tex/latex/\K[^/]+')
+        PACKAGE_NAME=$(echo "$PACKAGE_INFO" | sed -n 's|.*texmf-dist/tex/latex/\([^/]*\)/.*|\1|p')
 
         if [[ -n "$PACKAGE_NAME" ]]; then
             echo "Found package: '$PACKAGE_NAME' for '$PACKAGE_NAME_INPUT'."
