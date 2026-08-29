@@ -19,5 +19,6 @@ return {
   -- { import = "astrocommunity.pack.chezmoi" },
   { import = "astrocommunity.pack.docker" },
   { import = "astrocommunity.pack.bash" },
+  { import = "astrocommunity.pack.typst" },
   -- import/override with your plugins folder
 }

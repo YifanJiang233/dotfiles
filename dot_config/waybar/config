@@ -2,16 +2,30 @@
     "layer": "top",
     "height": 30,
     "modules-left": ["sway/mode", "sway/workspaces"],
-    "modules-center": ["sway/window"],
-    "modules-right": ["bluetooth", "pulseaudio", "network", "battery", "clock"],
+    "modules-center": ["sway/window#indicator", "sway/window"],
+    "modules-right": ["custom/weather", "bluetooth", "pulseaudio", "network", "battery", "clock"],
+    "sway/window#indicator": {
+        "format": "{shell}",
+        "rewrite": {
+            "xdg_shell": "<span color='#a6e3a1'>●</span>",
+            "xwayland": "<span color='#f38ba8'>●</span>"
+        },
+        "tooltip": false
+    },
     "sway/window": {
+        "format": "{title}",
         "icon": true,
         "icon-size": 20,
-        "max-length": 60,
+        "max-length": 60
     },
     "battery": {
         "states": {
             "warning": 10,
+            "critical": 5,
+        },
+        "events": {
+            "on-discharging-warning": "/home/yifan/.config/waybar/battery-warning",
+            "on-discharging-critical": "/home/yifan/.config/waybar/battery-warning",
         },
         "format": "{capacity}% {icon}",
         "format-icons": ["", "", "", "", ""]
@@ -62,5 +76,15 @@
 	    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
 	    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
 	    "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%"
-    } 
+    },
+    "custom/weather": {
+        "exec": "python3 ~/.config/waybar/weather.py",
+        "return-type": "json",
+        "interval": 1800,
+        "format": "{}",
+        "tooltip": true,
+        "signal": 8,
+        "on-click": "python3 ~/.config/waybar/weather.py --refresh && pkill -RTMIN+8 waybar",
+        "on-click-right": "python3 ~/.config/waybar/weather.py --open"
+    }
 }

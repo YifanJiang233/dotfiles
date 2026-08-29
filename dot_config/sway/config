@@ -5,6 +5,12 @@
 # Read `man 5 sway` for a complete reference.
 include catppuccin-mocha
 
+# Make Wayland/sway session details visible to dbus-activated apps such as
+# xdg-desktop-portal and Electron clients.
+set $systemd_env XDG_CURRENT_DESKTOP=sway XDG_SESSION_DESKTOP=sway XDG_SESSION_TYPE=wayland WAYLAND_DISPLAY DISPLAY SWAYSOCK
+exec dbus-update-activation-environment --systemd $systemd_env
+exec systemctl --user import-environment $systemd_env
+
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
@@ -31,12 +37,12 @@ output * bg $HOME/Pictures/wallpapers/astronaut-nord.png fill
 #
 # create headless output
 exec swaymsg create_output
-exec swaymsg output "HEADLESS-1" disable
 # Example configuration:
 #
 output HDMI-A-1 position 1920,0
 output eDP-1 position 0,0
 output HEADLESS-1 resolution 1668x2388 position -1920,0 bg $HOME/Pictures/wallpapers/tree.jpg fill 
+output HEADLESS-1 disable
 #   output HDMI-A-1 resolution 1920x1080 position 1920,0
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
@@ -364,3 +370,6 @@ bar swaybar_command waybar
 include /etc/sway/config.d/*
 
 exec_always systemctl --user start sway-session.target
+
+# Launch or switch MapleLegends instances
+bindsym $mod+g exec ~/.config/sway/scripts/maple_launcher.sh

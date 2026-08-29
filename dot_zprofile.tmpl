@@ -4,6 +4,7 @@ export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 export ANTIDOTE_HOME="$HOME/.cache/antidote"
 export EDITOR=nvim
 export VISUAL=nvim
+export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 
@@ -14,7 +15,6 @@ source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 
 {{if eq .chezmoi.os "linux"}}
 if [[ -z "$DISPLAY" ]] && [[ $(tty) = /dev/tty1 ]]; then
-    exec sway
+  exec sway
 fi
-export PATH="$HOME/bin:$PATH"
 {{ end -}}

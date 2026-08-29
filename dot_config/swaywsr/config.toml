@@ -6,6 +6,7 @@
 "org.nicotine_plus.Nicotine"           = "Nicotine"
 "me-him188-ani-app-desktop-AniDesktop" = "Animeko"
 "glide-glide"                          = "glide"
+"org.localsend.localsend_app"          = "localsend"
 
 [general]
 separator = " ¦ "
