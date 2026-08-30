@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
-sketchybar --add item volume right \
-  --set volume \
-    update_freq=10 \
-    script="$PLUGIN_DIR/volume.sh" \
-    click_script="open 'x-apple.systempreferences:com.apple.Sound-Settings.extension'" \
+sketchybar --add item weather right \
+  --set weather \
+    update_freq=1800 \
+    script="$PLUGIN_DIR/weather.sh" \
+    click_script="$PLUGIN_DIR/weather_click.sh" \
     icon.drawing=on \
     icon.font="JetBrains Mono:Bold:15.0" \
     icon.color="$TEXT" \
     icon.padding_left=0 \
     icon.padding_right=4 \
-    label.font="JetBrainsMono Nerd Font:Bold:15.0" \
+    label.font="Apple Color Emoji:Regular:15.0" \
     label.color="$TEXT" \
     label.y_offset=1 \
     label.padding_left=0 \
@@ -26,4 +26,4 @@ sketchybar --add item volume right \
     popup.background.border_width=1 \
     popup.background.padding_left=12 \
     popup.background.padding_right=12 \
-  --subscribe volume volume_change system_woke mouse.entered mouse.exited
+  --subscribe weather weather_refresh mouse.entered mouse.exited

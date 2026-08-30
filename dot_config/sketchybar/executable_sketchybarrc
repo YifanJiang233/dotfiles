@@ -23,23 +23,39 @@ sketchybar --bar "${bar_config[@]}" \
 # We add some regular items to the left side of the bar
 # only the properties deviating from the current defaults need to be set
 
-source $ITEM_DIR/apple.sh
-source $ITEM_DIR/aerospace.sh
+# source $ITEM_DIR/apple.sh
+# Aerospace integration remains available, but Rift owns the active workspace bar.
+# source $ITEM_DIR/aerospace.sh
+source $ITEM_DIR/rift_workspaces.sh
 
 ##### Adding Center Items #####
 # We add some regular items to the center of the bar
 # source $ITEM_DIR/lyric.sh
-source $ITEM_DIR/front_app.sh
+# The original front_app item remains unchanged but is not loaded alongside Rift's window item.
+# source $ITEM_DIR/front_app.sh
+source $ITEM_DIR/rift_front_app.sh
 
 
 ##### Adding Right Items #####
-          
-source $ITEM_DIR/calendar.sh
-source $ITEM_DIR/battery.sh
-source $ITEM_DIR/wifi.sh
+
+# Remove right-side items from the previous layout before adding the current
+# module set. SketchyBar keeps existing items across config reloads.
+sketchybar --remove battery >/dev/null 2>&1
+sketchybar --remove volume >/dev/null 2>&1
+sketchybar --remove weather >/dev/null 2>&1
+sketchybar --remove bluetooth >/dev/null 2>&1
+sketchybar --remove network >/dev/null 2>&1
+sketchybar --remove clock >/dev/null 2>&1
+sketchybar --remove '/^network\.(up|down)$/' >/dev/null 2>&1
+sketchybar --remove '/^svim\./' >/dev/null 2>&1
+sketchybar --remove '/^(weather|bluetooth|volume|network)\.tooltip\.line\.[0-9]+$/' >/dev/null 2>&1
+
+sketchybar --add event weather_refresh
+source $ITEM_DIR/clock.sh
+source $ITEM_DIR/network.sh
 source $ITEM_DIR/volume.sh
-source $ITEM_DIR/svim.sh
-# source $ITEM_DIR/media.sh
+source $ITEM_DIR/bluetooth.sh
+source $ITEM_DIR/weather.sh
 
 # The below command is only needed at the end of the initial configuration to
 # force all scripts to run the first time, it should never be run in an item script.

@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-sketchybar --add item volume right \
-  --set volume \
-    update_freq=10 \
-    script="$PLUGIN_DIR/volume.sh" \
-    click_script="open 'x-apple.systempreferences:com.apple.Sound-Settings.extension'" \
+sketchybar --add item bluetooth right \
+  --set bluetooth \
+    update_freq=30 \
+    script="$PLUGIN_DIR/bluetooth.sh" \
     icon.drawing=on \
     icon.font="JetBrains Mono:Bold:15.0" \
     icon.color="$TEXT" \
@@ -26,4 +25,4 @@ sketchybar --add item volume right \
     popup.background.border_width=1 \
     popup.background.padding_left=12 \
     popup.background.padding_right=12 \
-  --subscribe volume volume_change system_woke mouse.entered mouse.exited
+  --subscribe bluetooth mouse.entered mouse.exited system_woke

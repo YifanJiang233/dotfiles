@@ -1,115 +1,62 @@
 #!/usr/bin/env bash
 
-# WIDTH=60
-
-# volume_change() {
-#   source "$CONFIG_DIR/styles/style.sh"
-#   case $INFO in
-#     [6-9][0-9] | 100)
-#       ICON=$VOLUME_100
-#       ;;
-#     [3-5][0-9])
-#       ICON=$VOLUME_66
-#       ;;
-#     [1-2][0-9])
-#       ICON=$VOLUME_33
-#       ;;
-#     [1-9])
-#       ICON=$VOLUME_10
-#       ;;
-#     0)
-#       ICON=$VOLUME_0
-#       ;;
-#     *) ICON=$VOLUME_100 ;;
-#   esac
-
-#   CURRENT="$(SwitchAudioSource -t output -c)"
-
-#   case "$CURRENT" in
-#     "Beoplay EQ" | "External Headphones")
-#       ICON=$HEADSET
-#       ;;
-#     "BenQ GW2470" | "PL2409HD")
-#       ICON="󰽟"
-#       ;;
-#   esac
-
-#   sketchybar --set volume_icon icon=$ICON \
-#     --set $NAME slider.percentage=$INFO
-
-#   INITIAL_WIDTH="$(sketchybar --query $NAME | jq -r ".slider.width")"
-#   if [ "$INITIAL_WIDTH" -eq "0" ]; then
-#     sketchybar --animate tanh 30 --set $NAME slider.width=$WIDTH
-#   fi
-
-#   sleep 2
-
-#   # Check wether the volume was changed another time while sleeping
-#   FINAL_PERCENTAGE="$(sketchybar --query $NAME | jq -r ".slider.percentage")"
-#   if [ "$FINAL_PERCENTAGE" -eq "$INFO" ]; then
-#     sketchybar --animate tanh 30 --set $NAME slider.width=0
-#   fi
-# }
-
-# mouse_clicked() {
-#   osascript -e "set volume output volume $PERCENTAGE"
-# }
-
-# case "$SENDER" in
-#   "volume_change")
-#     volume_change
-#     ;;
-#   "mouse.clicked")
-#     mouse_clicked
-#     ;;
-# esac
-
 source "$CONFIG_DIR/styles/style.sh"
+source "$CONFIG_DIR/plugins/right_tooltip.sh"
 
-case $INFO in
-  [6-9][0-9] | 100)
-    ICON=$VOLUME_100
-    ;;
-  [3-5][0-9])
-    ICON=$VOLUME_66
-    ;;
-  [1-2][0-9])
-    ICON=$VOLUME_33
-    ;;
-  [1-9])
-    ICON=$VOLUME_10
-    ;;
-  0)
-    ICON=$VOLUME_0
-    ;;
-  *) ICON=$VOLUME_100 ;;
+if [ "$SENDER" = "mouse.entered" ] || [ "$SENDER" = "mouse.exited" ]; then
+  right_tooltip_hover "$NAME" "$SENDER"
+  exit 0
+fi
+
+AUDIO_DEVICE_HELPER="${AUDIO_DEVICE_HELPER:-$CONFIG_DIR/plugins/audio_device.sh}"
+device_class="unknown"
+device_name="Audio output unavailable"
+helper_volume=""
+muted=0
+
+if [ -x "$AUDIO_DEVICE_HELPER" ]; then
+  device_info=$("$AUDIO_DEVICE_HELPER" 2>/dev/null || true)
+  if [ -n "$device_info" ]; then
+    IFS=$'\t' read -r device_class device_name helper_volume muted <<< "$device_info"
+  fi
+fi
+
+volume="$INFO"
+case "$volume" in
+  ''|*[!0-9]*) volume="$helper_volume" ;;
+esac
+case "$volume" in
+  ''|*[!0-9]*) exit 0 ;;
 esac
 
-CURRENT="$(SwitchAudioSource -t output -c)"
+if [ "$muted" = "1" ] || [ "$volume" -eq 0 ]; then
+  device_icon=""
+else
+  case "$device_class" in
+    headphones|bluetooth)
+      device_icon=""
+      ;;
+    speakers)
+      device_icon=""
+      ;;
+    display)
+      device_icon="󰽟"
+      ;;
+    *)
+      if [ "$volume" -ge 60 ]; then
+        device_icon=""
+      else
+        device_icon=""
+      fi
+      ;;
+  esac
+fi
 
-case "$CURRENT" in
-  "Beoplay EQ" | "External Headphones")
-    ICON=$HEADSET
-    ;;
-  "BenQ GW2470" | "PL2409HD")
-    ICON="󰽟"
-    ;;
+case "$device_name" in
+  ''|"Unknown output") device_name="Audio output unavailable" ;;
 esac
 
-sketchybar --set $NAME icon=$ICON \
-  label="${INFO}%"
-
-# --set $NAME slider.percentage=$INFO
-
-# INITIAL_WIDTH="$(sketchybar --query $NAME | jq -r ".slider.width")"
-# if [ "$INITIAL_WIDTH" -eq "0" ]; then
-#   sketchybar --animate tanh 30 --set $NAME slider.width=$WIDTH
-# fi
-
-# sleep 2
-
-# Check wether the volume was changed another time while sleeping
-# FINAL_PERCENTAGE="$(sketchybar --query $NAME | jq -r ".slider.percentage")"
-# if [ "$FINAL_PERCENTAGE" -eq "$INFO" ]; then
-#   sketchybar --animate tanh 30 --set $NAME slider.width=0
-# fi
+sketchybar --set "$NAME" \
+  icon="${volume}%" icon.color="$TEXT" \
+  label="$device_icon" label.color="$TEXT"
+right_tooltip_update "$NAME" "$device_name"

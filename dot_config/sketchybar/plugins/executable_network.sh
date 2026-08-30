@@ -1,44 +1,78 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-function getBytes {
-  netstat -w1 > ~/.config/sketchybar/plugins/network.out &
-  sleep 1
-  kill $!
-}
+source "$CONFIG_DIR/styles/style.sh"
+source "$CONFIG_DIR/plugins/right_tooltip.sh"
 
-BYTES=$(getBytes > /dev/null)
-BYTES=$(cat ~/.config/sketchybar/plugins/network.out | grep '[0-9].*')
+if [ "$SENDER" = "mouse.entered" ] || [ "$SENDER" = "mouse.exited" ]; then
+  right_tooltip_hover "$NAME" "$SENDER"
+  exit 0
+fi
 
-DOWN=$(echo $BYTES | awk '{print $3}')
-UP=$(echo $BYTES | awk '{print $6}')
+NETWORKSETUP="/usr/sbin/networksetup"
+SYSTEM_PROFILER="/usr/sbin/system_profiler"
+JQ="/opt/homebrew/bin/jq"
 
-function human_readable() {
-  local abbrevs=(
-    $((1 << 60)):ZiB
-    $((1 << 50)):EiB
-    $((1 << 40)):TiB
-    $((1 << 30)):GiB
-    $((1 << 20)):MiB
-    $((1 << 10)):KiB
-    $((1)):B
+wifi_device=""
+if [ -x "$NETWORKSETUP" ]; then
+  wifi_device=$(
+    "$NETWORKSETUP" -listallhardwareports 2>/dev/null |
+      awk '/^(Hardware Port|Device):/ { if ($0 ~ /^Hardware Port: Wi-Fi/) want=1; else if ($0 ~ /^Hardware Port:/) want=0; else if (want && $0 ~ /^Device:/) { print $2; exit } }'
   )
+fi
 
-  local bytes="${1}"
-  local precision="${2}"
+[ -n "$wifi_device" ] || wifi_device="en0"
 
-  for item in "${abbrevs[@]}"; do
-    local factor="${item%:*}"
-    local abbrev="${item#*:}"
-    if [[ "${bytes}" -ge "${factor}" ]]; then
-      local size="$(bc -l <<< "${bytes} / ${factor}")"
-      printf "%.*f %s\n" "${precision}" "${size}" "${abbrev}"
-      break
-    fi
-  done
-}
+ssid=""
+if [ -x "$NETWORKSETUP" ]; then
+  ssid=$(
+    "$NETWORKSETUP" -getairportnetwork "$wifi_device" 2>/dev/null |
+      sed -n 's/^Current Wi-Fi Network: //p'
+  )
+fi
 
-DOWN_FORMAT=$(human_readable $DOWN 1)
-UP_FORMAT=$(human_readable $UP 1)
+default_interface=$(route -n get default 2>/dev/null | awk '/interface:/{print $2; exit}')
+signal=""
 
-sketchybar --set network.down label="$DOWN_FORMAT/s" \
-  --set network.up label="$UP_FORMAT/s"
+if [ -n "$ssid" ] && [ -x "$SYSTEM_PROFILER" ] && [ -x "$JQ" ]; then
+  signal_raw=$(
+    "$SYSTEM_PROFILER" SPAirPortDataType -json 2>/dev/null |
+      "$JQ" -r '.. | objects | .spairport_signal_noise? // empty' 2>/dev/null |
+      head -1
+  )
+  rssi=$(printf '%s' "$signal_raw" | sed -n 's/^[^0-9-]*\(-[0-9][0-9]*\).*/\1/p')
+  case "$rssi" in
+    -[0-9]*)
+      signal=$((2 * (rssi + 100)))
+      [ "$signal" -lt 0 ] && signal=0
+      [ "$signal" -gt 100 ] && signal=100
+      ;;
+  esac
+fi
+
+if [ -n "$ssid" ]; then
+  if [ -n "$signal" ]; then
+    network_text="$signal%"
+    network_icon=""
+    tooltip="$ssid ($signal%)"
+  else
+    network_text=""
+    network_icon=""
+    tooltip="$ssid"
+  fi
+  color="$TEXT"
+elif [ -n "$default_interface" ]; then
+  network_text="$default_interface"
+  network_icon=""
+  tooltip="$default_interface"
+  color="$TEXT"
+else
+  network_text=""
+  network_icon=""
+  tooltip="Disconnected"
+  color="$RED"
+fi
+
+sketchybar --set "$NAME" \
+  icon="$network_text" icon.color="$color" \
+  label="$network_icon" label.color="$color"
+right_tooltip_update "$NAME" "$tooltip"
