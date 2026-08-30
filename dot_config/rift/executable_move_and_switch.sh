@@ -1,4 +1,5 @@
 #!/bin/sh
 set -eu
 
-/opt/homebrew/bin/rift-cli execute workspace move-window --follow "$1"
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+exec "$SCRIPT_DIR/scratchpad.sh" release "$1"

@@ -26,6 +26,7 @@ sketchybar --bar "${bar_config[@]}" \
 # source $ITEM_DIR/apple.sh
 # Aerospace integration remains available, but Rift owns the active workspace bar.
 # source $ITEM_DIR/aerospace.sh
+source $ITEM_DIR/rift_resize_mode.sh
 source $ITEM_DIR/rift_workspaces.sh
 
 ##### Adding Center Items #####

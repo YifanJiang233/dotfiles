@@ -198,7 +198,7 @@ drag_swap_fraction = 0.3
 #   that's already active, it will switch to the last workspace instead
 # - reapply_app_rules_on_title_change: if true, app rules are re-evaluated when a window's title changes
 enabled                           = true
-default_workspace_count           = 10
+default_workspace_count           = 12
 auto_assign_windows               = true
 preserve_focus_per_workspace      = true
 workspace_auto_back_and_forth     = false
@@ -213,7 +213,7 @@ default_workspace = 0
 # Workspace names (indexed order). If fewer than default_workspace_count are provided,
 # remaining workspaces are named "Workspace X".
 # Do not provide more names than default_workspace_count.
-workspace_names = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+workspace_names = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "__scratchpad"]
 
 # App rules (automatic assignment)
 # Define rules that match new windows and set properties (workspace, floating, etc).
@@ -284,13 +284,6 @@ app_rules = [
   { title_substring = "Maple", floating = true },
 ]
 
-# Modifier combinations that can be reused in key bindings
-# Define common modifier combinations to avoid repetition.
-# Example usage: with `comb1 = "Alt + Shift"`, you can write:
-#   "comb1 + H" = { move_node = "left" }
-[modifier_combinations]
-comb1 = "Alt + Shift"
-
 [keys]
 # Key binding syntax
 # - Use quotes around the key: "Alt + Shift + H"
@@ -308,8 +301,8 @@ comb1 = "Alt + Shift"
 # - switch_to_last_workspace
 # - move_focus = "left"|"right"|"up"|"down"
 # - move_node = "left"|"right"|"up"|"down"
-# - join_window = "left"|"right"|"up"|"down"
-# - stack_windows / unstack_windows / unjoin_windows
+# - join_window / consume_or_expel_window = "left"|"right"|"up"|"down"
+# - toggle_stack / toggle_orientation / unjoin_windows
 # - toggle_focus_floating / toggle_window_floating / toggle_fullscreen
 # - resize_window_grow / resize_window_shrink
 # - move_mouse_to_display = N or UUID
@@ -350,40 +343,26 @@ comb1 = "Alt + Shift"
 "Meta + 9" = { switch_to_workspace = 8 }
 "Meta + 0" = { switch_to_workspace = 9 }
 
-"Meta + Shift + 1" = { "exec" = "{{ .chezmoi.homeDir }}/.config/rift/move_and_switch.sh 0" }
-"Meta + Shift + 2" = { "exec" = "{{ .chezmoi.homeDir }}/.config/rift/move_and_switch.sh 1" }
-"Meta + Shift + 3" = { "exec" = "{{ .chezmoi.homeDir }}/.config/rift/move_and_switch.sh 2" }
-"Meta + Shift + 4" = { "exec" = "{{ .chezmoi.homeDir }}/.config/rift/move_and_switch.sh 3" }
-"Meta + Shift + 5" = { "exec" = "{{ .chezmoi.homeDir }}/.config/rift/move_and_switch.sh 4" }
-"Meta + Shift + 6" = { "exec" = "{{ .chezmoi.homeDir }}/.config/rift/move_and_switch.sh 5" }
-"Meta + Shift + 7" = { "exec" = "{{ .chezmoi.homeDir }}/.config/rift/move_and_switch.sh 6" }
-"Meta + Shift + 8" = { "exec" = "{{ .chezmoi.homeDir }}/.config/rift/move_and_switch.sh 7" }
-"Meta + Shift + 9" = { "exec" = "{{ .chezmoi.homeDir }}/.config/rift/move_and_switch.sh 8" }
-"Meta + Shift + 0" = { "exec" = "{{ .chezmoi.homeDir }}/.config/rift/move_and_switch.sh 9" }
-
 "Meta + Tab" = "switch_to_last_workspace"
 
 # Rift exposes directional display movement rather than Sway's "next output".
 "Meta + Shift + Tab" = { move_window_to_display = { selector = "right" } }
 
-"Alt + Shift + H" = { join_window = "left" }
-"Alt + Shift + L" = { join_window = "right" }
-"Alt + Shift + K" = { join_window = "up" }
-"Alt + Shift + J" = { join_window = "down" }
-"Alt + Comma"     = "toggle_stack"
-"Alt + Slash"     = "toggle_orientation"
-"Alt + Ctrl + E"  = "unjoin_windows"
+"Meta + Ctrl + H" = { consume_or_expel_window = "left" }
+"Meta + Ctrl + J" = { consume_or_expel_window = "down" }
+"Meta + Ctrl + K" = { consume_or_expel_window = "up" }
+"Meta + Ctrl + L" = { consume_or_expel_window = "right" }
+"Meta + Ctrl + ArrowLeft"  = { consume_or_expel_window = "left" }
+"Meta + Ctrl + ArrowDown"  = { consume_or_expel_window = "down" }
+"Meta + Ctrl + ArrowUp"    = { consume_or_expel_window = "up" }
+"Meta + Ctrl + ArrowRight" = { consume_or_expel_window = "right" }
+"Meta + Ctrl + Comma" = "toggle_stack"
+"Meta + Ctrl + Slash" = "toggle_orientation"
 
 "Meta + Shift + Space" = "toggle_window_floating"
 "Meta + F"             = "toggle_fullscreen"
 # "Meta + Shift + F"     = "toggle_fullscreen_within_gaps"
 "Meta + Shift + F"      = "toggle_focus_floating"
-"Meta + -"              = "toggle_focus_floating" # briefly bring focus to floating window
-
-# smartly resize windows
-"Alt + Shift + Equal" = "resize_window_grow"
-"Alt + Shift + Minus" = "resize_window_shrink"
-
 # Move mouse cursor to display by index (0-based) or UUID
 # Examples:
 # "Alt + Shift + A" = { move_mouse_to_display = 0 }
