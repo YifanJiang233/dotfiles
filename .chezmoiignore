@@ -4,12 +4,22 @@
 .config/sketchybar
 .config/svim
 .config/karabiner
+.config/rift
 {{ end}}
 
 {{ if ne .chezmoi.os "linux"}}
+.config/darkman
+.config/fcitx5
+.config/fontconfig
+.config/mako
 .config/sway
+.config/swaywsr
+.config/systemd
 .config/tofi
 .config/waybar
-.config/pacseek
-.config/systemd
+.config/wluma
+.config/xdg-dekstop-portal
+mimeapps.list
+user-dirs.dirs
+user-drs.locale
 {{ end}}
