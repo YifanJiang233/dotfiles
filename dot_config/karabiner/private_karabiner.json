@@ -625,6 +625,63 @@
                                 "type": "basic"
                             }
                         ]
+                    },
+                    {
+                        "description": "MapleLegends arrow keys",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.codeweavers\\.CrossOverHelper\\.0D117520C6E135814AEBF9B89F66FBD2\\.0D117520C6E135814AEBF9B89F66FBD2$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": { "key_code": "open_bracket" },
+                                "to": [{ "key_code": "up_arrow" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.codeweavers\\.CrossOverHelper\\.0D117520C6E135814AEBF9B89F66FBD2\\.0D117520C6E135814AEBF9B89F66FBD2$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": { "key_code": "semicolon" },
+                                "to": [{ "key_code": "left_arrow" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.codeweavers\\.CrossOverHelper\\.0D117520C6E135814AEBF9B89F66FBD2\\.0D117520C6E135814AEBF9B89F66FBD2$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": { "key_code": "slash" },
+                                "to": [{ "key_code": "down_arrow" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.codeweavers\\.CrossOverHelper\\.0D117520C6E135814AEBF9B89F66FBD2\\.0D117520C6E135814AEBF9B89F66FBD2$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": { "key_code": "quote" },
+                                "to": [{ "key_code": "right_arrow" }],
+                                "type": "basic"
+                            }
+                        ]
                     }
                 ]
             },
