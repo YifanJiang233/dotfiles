@@ -28,7 +28,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "/bin/bash /Users/yifan/.config/rift/scratchpad.sh send"
+                                        "shell_command": "/opt/homebrew/bin/rift-cli execute scratchpad send"
                                     }
                                 ],
                                 "type": "basic"
@@ -47,7 +47,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "/bin/bash /Users/yifan/.config/rift/scratchpad.sh show"
+                                        "shell_command": "/opt/homebrew/bin/rift-cli execute scratchpad show"
                                     }
                                 ],
                                 "type": "basic"
@@ -72,7 +72,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "/bin/sh /Users/yifan/.config/rift/move_and_switch.sh 0"
+                                        "shell_command": "/opt/homebrew/bin/rift-cli execute scratchpad release 0"
                                     }
                                 ],
                                 "type": "basic"
@@ -92,7 +92,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "/bin/sh /Users/yifan/.config/rift/move_and_switch.sh 1"
+                                        "shell_command": "/opt/homebrew/bin/rift-cli execute scratchpad release 1"
                                     }
                                 ],
                                 "type": "basic"
@@ -112,7 +112,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "/bin/sh /Users/yifan/.config/rift/move_and_switch.sh 2"
+                                        "shell_command": "/opt/homebrew/bin/rift-cli execute scratchpad release 2"
                                     }
                                 ],
                                 "type": "basic"
@@ -132,7 +132,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "/bin/sh /Users/yifan/.config/rift/move_and_switch.sh 3"
+                                        "shell_command": "/opt/homebrew/bin/rift-cli execute scratchpad release 3"
                                     }
                                 ],
                                 "type": "basic"
@@ -152,7 +152,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "/bin/sh /Users/yifan/.config/rift/move_and_switch.sh 4"
+                                        "shell_command": "/opt/homebrew/bin/rift-cli execute scratchpad release 4"
                                     }
                                 ],
                                 "type": "basic"
@@ -172,7 +172,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "/bin/sh /Users/yifan/.config/rift/move_and_switch.sh 5"
+                                        "shell_command": "/opt/homebrew/bin/rift-cli execute scratchpad release 5"
                                     }
                                 ],
                                 "type": "basic"
@@ -192,7 +192,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "/bin/sh /Users/yifan/.config/rift/move_and_switch.sh 6"
+                                        "shell_command": "/opt/homebrew/bin/rift-cli execute scratchpad release 6"
                                     }
                                 ],
                                 "type": "basic"
@@ -212,7 +212,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "/bin/sh /Users/yifan/.config/rift/move_and_switch.sh 7"
+                                        "shell_command": "/opt/homebrew/bin/rift-cli execute scratchpad release 7"
                                     }
                                 ],
                                 "type": "basic"
@@ -232,7 +232,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "/bin/sh /Users/yifan/.config/rift/move_and_switch.sh 8"
+                                        "shell_command": "/opt/homebrew/bin/rift-cli execute scratchpad release 8"
                                     }
                                 ],
                                 "type": "basic"
@@ -252,7 +252,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "/bin/sh /Users/yifan/.config/rift/move_and_switch.sh 9"
+                                        "shell_command": "/opt/homebrew/bin/rift-cli execute scratchpad release 9"
                                     }
                                 ],
                                 "type": "basic"
