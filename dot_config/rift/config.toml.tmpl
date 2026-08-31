@@ -69,6 +69,7 @@ auto_focus_blacklist = []
 
 run_on_start = [
   "{{ .chezmoi.homeDir }}/.config/rift/sketchybar_events.sh",
+  "{{ .chezmoi.homeDir }}/.config/rift/autotiling_events.sh",
 ]
 
 # Hot Reloading
@@ -81,6 +82,11 @@ hot_reload = true
 # - mode: "traditional" (i3/sway-like containers) or "bsp" (binary space partitioning)
 #   defaults to "traditional" if omitted
 mode = "traditional"
+
+[settings.layout.traditional]
+# Split only the selected node when a new window opens. The autotiling worker
+# preserves that leaf's outer share while nesting the new pair.
+equalize_nodes = false
 
 [settings.layout.stack]
 # How much of each stacked window sticks out (in pixels)
