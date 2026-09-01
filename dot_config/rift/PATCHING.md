@@ -15,11 +15,11 @@ document.
 | Upstream repository | `https://github.com/acsandmann/rift` |
 | Pinned upstream commit | `46f5ba06781ac73d145780d2dbfe96516c8ccfb0` |
 | Pinned commit date/subject | `2026-08-30` — `fix: reject ordered-out windows during app discovery (#460)` |
-| Personal formula version | `0.5.3-native.1` |
+| Personal formula version | `0.5.3-native.2` |
 | Source archive SHA-256 | `3070454428b3edc9442dcd0c035c79d896499b205e1ea27f5f88f3b1fbea21e7` |
-| Canonical patch SHA-256 | `24b2d3491170e43401c4e07f25fd2c379cc0bd7035559a31743b6f4d852ffb98` |
+| Canonical patch SHA-256 | `3d7f000dc45e2a6059beaa2d64e6900af9c592ea691c3c8076ff05841761ac7f` |
 | Official rollback keg installed | `rift 0.5.3` |
-| Active service | `homebrew.mxcl.rift-native` |
+| Active service | `git.acsandmann.rift` via `/opt/homebrew/bin/rift` |
 | Personal formula repository | `~/.config/rift/homebrew-tap` |
 | Registered Homebrew tap | `yifan/rift` |
 | Chezmoi source repository | `~/.local/share/chezmoi` |
@@ -37,10 +37,16 @@ Only run `brew unpin rift` when intentionally testing or adopting a newer
 official release. The personal build is independently pinned by its exact
 archive URL, source checksum, embedded patch, and formula version.
 
-The `0.5.3-native.1` string is the personal Homebrew version label. The pinned
+The `0.5.3-native.2` string is the personal Homebrew version label. The pinned
 commit is not the commit referenced by upstream's `v0.5.3` tag (`6c64d8b`), and
 the root Cargo package reports `rift-wm 0.1.0`. Treat the full commit hash—not
 the label or Cargo package version—as the authoritative source identity.
+
+Use Rift's built-in `rift service` commands for startup. Do not run the personal
+build through `brew services`: that agent uses the opt-prefix path, while macOS
+Accessibility authorization for this ad-hoc-signed command-line tool is
+path-sensitive. The supported agent keeps the launch path at the linked
+`/opt/homebrew/bin/rift`; `homebrew.mxcl.rift-native` must remain unloaded.
 
 ## Sources of truth
 
@@ -137,14 +143,26 @@ rift-cli execute scratchpad show
 rift-cli execute scratchpad release 0
 ```
 
-Workspace selectors passed by the CLI are zero-based. The Karabiner mappings
-present them as normal one-based workspace keys:
+Workspace selectors passed by the CLI and Rift configuration are zero-based.
+The keybindings present them as normal one-based workspace keys:
 
-| Key | Action |
-| --- | --- |
-| Command+Shift+- | Send the focused window to the scratchpad |
-| Command+- | Show the most recent scratchpad window, or hide the focused shown scratchpad window |
-| Command+Shift+1 through Command+Shift+0 | Release the shown scratchpad window to workspaces 1 through 10 |
+| Key | Owner | Action |
+| --- | --- | --- |
+| Command+Shift+- | Karabiner | Send the focused window to the scratchpad |
+| Command+- | Karabiner | Show the most recent scratchpad window, or hide the focused shown scratchpad window |
+| Command+Shift+1 through Command+Shift+0 | Rift `[keys]` | Move any focused window to workspaces 1 through 10 and follow it |
+
+The number bindings use native Rift actions such as:
+
+```toml
+"Meta + Shift + 1" = { move_window_to_workspace = { workspace = 0, follow = true } }
+```
+
+For a normal tiled or floating window, Rift preserves its existing mode. If the
+focused window is the currently shown scratchpad member, the same action removes
+scratchpad membership and floating state, inserts it into the destination's
+tiled tree, and follows it. This scratchpad release still occurs when the target
+is the active workspace; an ordinary same-workspace move remains a no-op.
 
 The scratchpad must preserve these invariants:
 
@@ -227,6 +245,8 @@ This is the integration point for both features:
 - Integrates scratchpad state with window removal, process removal, and window
   ID rekeying.
 - Implements send, show/hide, relocation, centering, and release.
+- Shares one release transition between explicit `scratchpad release` and a
+  move-and-follow command targeting the focused shown scratchpad window.
 - Keeps globally tracked floating state separate from the tiled tree.
 - Tests that scratchpad operations and workspace relocation leave tiled frames
   unchanged before final native release.
@@ -294,9 +314,10 @@ a virtual workspace.
 - `conflicts_with "rift"` allows retaining both kegs but prevents linking both.
   Recheck this behavior before every formula cutover rather than assuming a
   future Homebrew version handles the conflict identically.
-- The formula installs only `rift` and `rift-cli`, ad-hoc signs both binaries,
-  and runs `#{opt_bin}/rift` as a keep-alive interactive service with standard
-  Homebrew `PATH`, `LANG=en_US.UTF-8`, and per-user logs in `/tmp`.
+- The formula installs only `rift` and `rift-cli` and ad-hoc signs both
+  binaries. Although the formula declares a Homebrew service, this machine uses
+  Rift's own `git.acsandmann.rift` launch agent so its executable path matches
+  the Accessibility authorization. Logs remain in `/tmp/rift_<user>.*.log`.
 
 ## Routine integrity checks
 
@@ -319,11 +340,14 @@ Also confirm the installed and linked builds explicitly:
 
 ```sh
 brew list --versions rift rift-native
-brew services list | grep rift
+launchctl print "gui/$(id -u)/git.acsandmann.rift" | grep -E 'state =|pid =|program ='
 readlink "$(brew --prefix)/bin/rift"
 readlink "$(brew --prefix)/bin/rift-cli"
 brew list --pinned
 ```
+
+Also confirm `launchctl print "gui/$(id -u)/homebrew.mxcl.rift-native"` fails;
+both service definitions must never be loaded at once.
 
 ## Rebasing the patch onto upstream
 
@@ -399,6 +423,9 @@ cargo test traditional_native_autotiling_is_opt_in
 cargo test native_scratchpad_show_and_hide_never_change_tiled_frames
 cargo test native_scratchpad_membership_round_trips_through_ron
 cargo test scratchpad_release_uses_typed_workspace_selector
+cargo test workspace_move_releases_shown_scratchpad_and_follows_window
+cargo test same_workspace_move_still_releases_shown_scratchpad
+cargo test floating_workspace_move_preserves_state_and_same_workspace_noops
 cargo test --bin rift-cli
 cargo build --release --locked --bins
 ```
@@ -518,8 +545,9 @@ Only after the source and formula gates pass:
 1. Keep the working official binary authorized in Accessibility until the new
    personal build passes acceptance.
 2. Re-enable `autotile_focused_leaf = true` in `config.toml`.
-3. Authorize the exact new personal binary shown by
-   `realpath "$(brew --prefix rift-native)/bin/rift"`.
+3. Link the personal keg, add `/opt/homebrew/bin/rift` to Accessibility, and
+   physically toggle its switch off and on so macOS commits the new binary
+   identity.
 4. Run the guarded activation below. It stops official Rift only at cutover and
    automatically relinks/restarts it if the personal service does not answer a
    GUI-domain query.
@@ -533,20 +561,20 @@ activate_rift_native() {
   native_cli="$(brew --prefix rift-native)/bin/rift-cli"
 
   rollback_to_official() {
-    brew services stop rift-native
+    /opt/homebrew/bin/rift service stop >/dev/null 2>&1 || true
     sed -i '' -E \
       's/^[[:space:]]*autotile_focused_leaf[[:space:]]*=.*/# autotile_focused_leaf = true/' \
       "$config_file"
     brew unlink rift-native
     brew link --overwrite rift
-    brew services start rift
+    /opt/homebrew/bin/rift service start
     echo "Native startup failed; official Rift was restored."
   }
 
-  brew services stop rift
+  /opt/homebrew/bin/rift service stop
   brew link --overwrite rift-native
 
-  if ! brew services start rift-native; then
+  if ! /opt/homebrew/bin/rift service start; then
     rollback_to_official
     return 1
   fi
@@ -566,7 +594,8 @@ activate_rift_native() {
     return 1
   fi
 
-  brew services list | grep rift
+  launchctl print "gui/$current_uid/git.acsandmann.rift" \
+    | grep -E 'state =|pid =|program ='
 }
 
 activate_rift_native
@@ -592,9 +621,11 @@ Add only the maintained files to Chezmoi and inspect its diff before committing:
 
 ```sh
 chezmoi add \
+  "$HOME/.config/rift/config.toml" \
   "$HOME/.config/rift/patches/native-autotiling.patch" \
   "$HOME/.config/rift/homebrew-tap/Formula/rift-native.rb" \
-  "$HOME/.config/rift/PATCHING.md"
+  "$HOME/.config/rift/PATCHING.md" \
+  "$HOME/.config/karabiner/karabiner.json"
 
 git -C "$HOME/.local/share/chezmoi" status --short
 git -C "$HOME/.local/share/chezmoi" diff --cached --check
@@ -669,29 +700,32 @@ launchctl asuser "$(id -u)" "$native_cli" execute save-layout --master
 
 Then:
 
-1. Stop `rift-native`.
+1. Stop the shared `git.acsandmann.rift` service through the currently linked
+   `rift` binary.
 2. Comment out or remove `autotile_focused_leaf = true`. Official Rift `0.5.3`
    does not know this field and can fail while parsing the configuration.
 3. Unlink the personal keg and link the retained official keg.
 4. In System Settings > Privacy & Security > Accessibility, remove stale Rift
-   entries and add the exact official binary `/opt/homebrew/opt/rift/bin/rift`.
+   entries, add `/opt/homebrew/bin/rift`, and physically toggle it off and on.
 5. Start official Rift and verify it in the GUI user domain.
 
 ```sh
-brew services stop rift-native
+/opt/homebrew/bin/rift service stop
 brew unlink rift-native
 brew link --overwrite rift
-brew services start rift
+/opt/homebrew/bin/rift service start
 
 official_cli="$(brew --prefix rift)/bin/rift-cli"
 launchctl asuser "$(id -u)" "$official_cli" query workspaces
-brew services list | grep rift
+launchctl print "gui/$(id -u)/git.acsandmann.rift" \
+  | grep -E 'state =|pid =|program ='
 ```
 
 The scratchpad Karabiner shortcuts will not work under official Rift because its
 CLI lacks the native commands. They may remain configured during a temporary
-rollback, but disable the `Rift scratchpad` and `Rift move window to workspace`
-groups for a permanent official-only setup.
+rollback, but disable the `Rift scratchpad` group for a permanent official-only
+setup. The native Rift number bindings remain valid for ordinary workspace
+movement under official Rift.
 
 ## Half-failed installation recovery
 
@@ -703,14 +737,14 @@ while no window manager is active.
 2. Stop any partial personal service.
 3. Unlink any partially installed personal keg.
 4. Relink and restart official Rift.
-5. Re-authorize `/opt/homebrew/opt/rift/bin/rift` if macOS removed or invalidated
-   its Accessibility entry.
+5. Re-authorize `/opt/homebrew/bin/rift` if macOS removed or invalidated its
+   Accessibility entry.
 
 ```sh
-brew services stop rift-native
+/opt/homebrew/bin/rift service stop
 brew unlink rift-native
 brew link --overwrite rift
-brew services restart rift
+/opt/homebrew/bin/rift service start
 
 official_cli="$(brew --prefix rift)/bin/rift-cli"
 launchctl asuser "$(id -u)" "$official_cli" query workspaces
@@ -726,13 +760,13 @@ First complete and verify the fast rollback. Then remove only the installed
 personal keg and registered tap clone:
 
 ```sh
-brew services stop rift-native
+/opt/homebrew/bin/rift service stop
 brew unlink rift-native
 brew uninstall rift-native
 brew untap yifan/rift
 ```
 
-Disable the two native-only Karabiner groups and leave
+Disable the native-only `Rift scratchpad` Karabiner group and leave
 `autotile_focused_leaf` absent or commented. Keep these tracked sources for
 history and possible restoration:
 
@@ -752,6 +786,7 @@ Add one entry for every local revision or upstream rebase.
 | Date | Old pin | New pin | Formula version | Patch SHA-256 | Validation and baseline notes |
 | --- | --- | --- | --- | --- | --- |
 | 2026-08-31 | — | `46f5ba06781ac73d145780d2dbfe96516c8ccfb0` | `0.5.3-native.1` | `24b2d3491170e43401c4e07f25fd2c379cc0bd7035559a31743b6f4d852ffb98` | Focused autotiling (3), scratchpad/persistence (2), and Rift CLI (3) tests pass; release build passes; full library suite 547/548 with the sole failure reproduced in pristine upstream; formula embedded patch byte-identical and applies to the pinned archive; live service, workspace, subscriptions, scratchpad, and ten-window behavior verified. |
+| 2026-09-01 | `46f5ba06781ac73d145780d2dbfe96516c8ccfb0` | `46f5ba06781ac73d145780d2dbfe96516c8ccfb0` | `0.5.3-native.2` | `3d7f000dc45e2a6059beaa2d64e6900af9c592ea691c3c8076ff05841761ac7f` | Unified move-and-follow releases a focused shown scratchpad while preserving ordinary tiled/floating behavior and same-workspace no-op semantics; focused regressions and release build pass; full library suite is 552/553 with the sole failure reproduced in pristine upstream; formula build and smoke test pass; live workspaces, layout modes, metrics, and four SketchyBar subscriptions verified after reauthorizing Accessibility and switching service ownership to `git.acsandmann.rift`; manual shortcut acceptance remains pending. |
 
 For future entries, include the exact failing test names when comparing a
 baseline, the manual acceptance result, and whether Accessibility had to be

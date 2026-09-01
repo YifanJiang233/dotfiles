@@ -175,7 +175,7 @@ index 9fad0f6..174c2a8 100644
      fn virtual_workspace_prevent_wrapping_defaults_to_false_and_accepts_suggested_alias() {
          let defaults: VirtualWorkspaceSettings = toml::from_str("").unwrap();
 diff --git a/src/layout_engine/engine.rs b/src/layout_engine/engine.rs
-index 8044770..61a43ee 100644
+index 8044770..c011cda 100644
 --- a/src/layout_engine/engine.rs
 +++ b/src/layout_engine/engine.rs
 @@ -14,6 +14,7 @@ use crate::common::config::{LayoutMode, LayoutSettings, WorkspaceSelector};
@@ -277,7 +277,7 @@ index 8044770..61a43ee 100644
              }
          } else {
              warn!(
-@@ -1127,6 +1181,324 @@ impl LayoutEngine {
+@@ -1127,6 +1181,333 @@ impl LayoutEngine {
          self.space_with_window(wid) != active_space_before
      }
  
@@ -377,6 +377,62 @@ index 8044770..61a43ee 100644
 +                    .into_iter()
 +                    .next()
 +            })
++    }
++
++    fn release_scratchpad_window_to_workspace(
++        &mut self,
++        window_store: &mut WindowStore,
++        space: SpaceId,
++        window: WindowId,
++        target_workspace: VirtualWorkspaceId,
++    ) -> Option<EventResponse> {
++        let scratch_workspace = self.scratchpad_workspace(space)?;
++        if target_workspace == scratch_workspace {
++            warn!("Scratchpad release target cannot be `__scratchpad`");
++            return None;
++        }
++        let active_workspace = self.virtual_workspace_manager.active_workspace(space)?;
++        let target_layout = self.workspace_layouts.active(space, target_workspace)?;
++        let anchor = self.selected_tiled_frame(space, target_workspace, target_layout);
++
++        if !self.virtual_workspace_manager.assign_window_to_workspace(
++            window_store,
++            space,
++            window,
++            target_workspace,
++        ) {
++            return None;
++        }
++        self.floating.remove_active_for_window(window);
++        self.floating.remove_floating(window);
++        self.floating_positions.remove_window(window);
++        self.workspace_tree_mut(target_workspace)
++            .add_window_after_selection_with_anchor_frame(target_layout, window, anchor);
++        self.scratchpad.remove(window);
++        self.virtual_workspace_manager.set_last_focused_window(
++            space,
++            target_workspace,
++            Some(window),
++        );
++
++        let mut response = if target_workspace == active_workspace {
++            self.commit_workspace_focus(window_store, space, Some(window));
++            EventResponse {
++                changed: true,
++                raise_windows: vec![window],
++                focus_window: Some(window),
++                boundary_hit: None,
++            }
++        } else {
++            self.activate_workspace(window_store, space, target_workspace, Some(window))
++        };
++        if !response.raise_windows.contains(&window) {
++            response.raise_windows.push(window);
++        }
++        response.focus_window = Some(window);
++        self.commit_workspace_focus(window_store, space, Some(window));
++        self.broadcast_windows_changed(window_store, space);
++        Some(response)
 +    }
 +
 +    fn handle_scratchpad_command(
@@ -540,60 +596,13 @@ index 8044770..61a43ee 100644
 +                    warn!(?workspace, "Scratchpad release target does not exist");
 +                    return EventResponse::default();
 +                };
-+                if target_workspace == scratch_workspace {
-+                    warn!("Scratchpad release target cannot be `__scratchpad`");
-+                    return EventResponse::default();
-+                }
-+                let Some(target_layout) =
-+                    self.workspace_layouts.active(space, target_workspace)
-+                else {
-+                    return EventResponse::default();
-+                };
-+                let anchor = self.selected_tiled_frame(space, target_workspace, target_layout);
-+
-+                if !self.virtual_workspace_manager.assign_window_to_workspace(
++                self.release_scratchpad_window_to_workspace(
 +                    window_store,
 +                    space,
 +                    window,
 +                    target_workspace,
-+                ) {
-+                    return EventResponse::default();
-+                }
-+                self.floating.remove_active_for_window(window);
-+                self.floating.remove_floating(window);
-+                self.floating_positions.remove_window(window);
-+                self.workspace_tree_mut(target_workspace)
-+                    .add_window_after_selection_with_anchor_frame(target_layout, window, anchor);
-+                self.scratchpad.remove(window);
-+                self.virtual_workspace_manager.set_last_focused_window(
-+                    space,
-+                    target_workspace,
-+                    Some(window),
-+                );
-+
-+                let mut response = if target_workspace == active_workspace {
-+                    self.commit_workspace_focus(window_store, space, Some(window));
-+                    EventResponse {
-+                        changed: true,
-+                        raise_windows: vec![window],
-+                        focus_window: Some(window),
-+                        boundary_hit: None,
-+                    }
-+                } else {
-+                    self.activate_workspace(
-+                        window_store,
-+                        space,
-+                        target_workspace,
-+                        Some(window),
-+                    )
-+                };
-+                if !response.raise_windows.contains(&window) {
-+                    response.raise_windows.push(window);
-+                }
-+                response.focus_window = Some(window);
-+                self.commit_workspace_focus(window_store, space, Some(window));
-+                self.broadcast_windows_changed(window_store, space);
-+                response
++                )
++                .unwrap_or_default()
 +            }
 +            _ => unreachable!("only scratchpad commands reach this handler"),
 +        }
@@ -602,7 +611,7 @@ index 8044770..61a43ee 100644
      fn remove_window_from_all_tiling_trees(&mut self, wid: WindowId) {
          let ws_ids: Vec<_> = self.virtual_workspace_manager.workspaces.keys().collect();
          for ws_id in ws_ids {
-@@ -1247,7 +1619,26 @@ impl LayoutEngine {
+@@ -1247,7 +1628,26 @@ impl LayoutEngine {
              // their normal insertion semantics, so preserve the selection
              // explicitly across discovery-driven synchronization.
              let selected_window = self.workspace_tree(ws_id).selected_window(layout);
@@ -630,7 +639,7 @@ index 8044770..61a43ee 100644
              if let Some(selected_window) = selected_window
                  && self.workspace_tree(ws_id).contains_window(layout, selected_window)
              {
-@@ -1347,6 +1738,7 @@ impl LayoutEngine {
+@@ -1347,6 +1747,7 @@ impl LayoutEngine {
              broadcast_tx,
              space_display_map: HashMap::default(),
              display_last_space: HashMap::default(),
@@ -638,7 +647,7 @@ index 8044770..61a43ee 100644
              persistence: PersistenceState::default(),
              startup_restore_pending: false,
          }
-@@ -1615,6 +2007,7 @@ impl LayoutEngine {
+@@ -1615,6 +2016,7 @@ impl LayoutEngine {
                  };
              }
              LayoutEvent::AppClosed(pid) => {
@@ -646,7 +655,7 @@ index 8044770..61a43ee 100644
                  for (_, ws) in self.virtual_workspace_manager.workspaces.iter_mut() {
                      ws.layout_system.remove_windows_for_app(pid);
                  }
-@@ -1715,6 +2108,22 @@ impl LayoutEngine {
+@@ -1715,6 +2117,22 @@ impl LayoutEngine {
                  debug!("No active workspace for space {:?}", space);
              }
          }
@@ -669,7 +678,7 @@ index 8044770..61a43ee 100644
          let is_floating = if let Some(focus) = self.focused_window {
              self.floating.is_floating(focus)
          } else {
-@@ -2040,6 +2449,9 @@ impl LayoutEngine {
+@@ -2040,6 +2458,9 @@ impl LayoutEngine {
              | LayoutCommand::MoveWindowToWorkspace { .. }
              | LayoutCommand::SetWorkspaceLayout { .. }
              | LayoutCommand::CreateWorkspace
@@ -679,7 +688,29 @@ index 8044770..61a43ee 100644
              | LayoutCommand::SwitchToLastWorkspace => EventResponse::default(),
              LayoutCommand::JoinWindow(direction) => {
                  self.workspace_layouts.mark_last_saved(space, workspace_id, layout);
-@@ -3082,6 +3494,7 @@ impl LayoutEngine {
+@@ -2616,6 +3037,21 @@ impl LayoutEngine {
+                     return EventResponse::default();
+                 };
+ 
++                let releases_shown_scratchpad = *follow
++                    && self.focused_window == Some(focused_window)
++                    && self.scratchpad.shown == Some(focused_window)
++                    && self.scratchpad.contains(focused_window);
++                if releases_shown_scratchpad {
++                    return self
++                        .release_scratchpad_window_to_workspace(
++                            window_store,
++                            op_space,
++                            focused_window,
++                            target_workspace_id,
++                        )
++                        .unwrap_or_default();
++                }
++
+                 if current_workspace_id == target_workspace_id {
+                     return EventResponse::default();
+                 }
+@@ -3082,6 +3518,7 @@ impl LayoutEngine {
          self.virtual_workspace_manager.transfer_window_identity(from, to);
          self.floating_positions.transfer_window_identity(from, to);
          self.floating.transfer_window_identity(from, to);
@@ -687,7 +718,7 @@ index 8044770..61a43ee 100644
          self.transfer_persisted_window_identity(from, to);
          if let Some(constraints) = self.window_layout_constraints.remove(&from) {
              self.window_layout_constraints.insert(to, constraints);
-@@ -3214,6 +3627,9 @@ mod tests {
+@@ -3214,6 +3651,9 @@ mod tests {
          AppRulePosition, AppRuleSize, AppWorkspaceRule, LayoutMode, LayoutSettings,
          VirtualWorkspaceSettings, WorkspaceLayoutRule, WorkspaceSelector,
      };
@@ -697,7 +728,7 @@ index 8044770..61a43ee 100644
  
      fn test_engine() -> LayoutEngine {
          LayoutEngine::new(
-@@ -3763,6 +4179,268 @@ mod tests {
+@@ -3763,6 +4203,407 @@ mod tests {
          assert!(response.changed);
      }
  
@@ -963,9 +994,232 @@ index 8044770..61a43ee 100644
 +        );
 +    }
 +
++    fn assert_workspace_move_releases_shown_scratchpad(target_index: usize) {
++        let workspace_settings = VirtualWorkspaceSettings {
++            default_workspace_count: 3,
++            workspace_names: vec!["1".into(), "2".into(), "__scratchpad".into()],
++            ..VirtualWorkspaceSettings::default()
++        };
++        let mut layout_settings = LayoutSettings::default();
++        layout_settings.traditional.autotile_focused_leaf = true;
++
++        let mut engine = LayoutEngine::new(&workspace_settings, &layout_settings, None);
++        let mut window_store = WindowStore::default();
++        let space = SpaceId::new(712);
++        let screen = CGRect::new(CGPoint::new(0.0, 0.0), CGSize::new(1344.0, 756.0));
++        let tiled = WindowId::new(71, 1);
++        let scratch = WindowId::new(71, 2);
++
++        for (window, sys_id) in [(tiled, 7101), (scratch, 7102)] {
++            let frame = CGRect::new(
++                CGPoint::new(0.0, 0.0),
++                CGSize::new(500.0, 300.0),
++            );
++            window_store.insert_window(
++                window,
++                WindowState {
++                    info: WindowInfo {
++                        is_standard: true,
++                        is_root: true,
++                        is_minimized: false,
++                        is_resizable: true,
++                        title: format!("window {}", window.idx),
++                        frame,
++                        min_size: None,
++                        max_size: None,
++                        sys_id: Some(WindowServerId::new(sys_id)),
++                        bundle_id: Some("com.example.scratchpad-move-test".into()),
++                        path: None,
++                        ax_role: None,
++                        ax_subrole: None,
++                    },
++                    frame_monotonic: frame,
++                    is_manageable: true,
++                    manage_override: None,
++                },
++            );
++        }
++
++        let info = |window| {
++            (
++                window,
++                None,
++                None,
++                None,
++                true,
++                CGSize::new(500.0, 300.0),
++                None,
++                None,
++            )
++        };
++        let _ = engine.handle_event(
++            &mut window_store,
++            LayoutEvent::SpaceExposed(space, screen.size),
++        );
++        let _ = engine.handle_event(
++            &mut window_store,
++            LayoutEvent::windows_on_screen_updated(
++                space,
++                tiled.pid,
++                vec![info(tiled), info(scratch)],
++                None,
++            ),
++        );
++        let _ = engine.handle_event(
++            &mut window_store,
++            LayoutEvent::WindowFocused(space, scratch),
++        );
++
++        let visible_spaces = vec![space];
++        let mut centers = HashMap::default();
++        centers.insert(space, screen.mid());
++        let _ = engine.handle_command(
++            &mut window_store,
++            Some(space),
++            &visible_spaces,
++            &centers,
++            LayoutCommand::ScratchpadSend,
++        );
++        let _ = engine.handle_command(
++            &mut window_store,
++            Some(space),
++            &visible_spaces,
++            &centers,
++            LayoutCommand::ScratchpadShow,
++        );
++
++        let target_workspace = engine
++            .workspace_for_selector(space, &WorkspaceSelector::Index(target_index))
++            .expect("target workspace missing");
++        let response = engine.handle_virtual_workspace_command(
++            &mut window_store,
++            space,
++            &LayoutCommand::MoveWindowToWorkspace {
++                workspace: WorkspaceSelector::Index(target_index),
++                follow: true,
++                window_id: None,
++            },
++        );
++
++        assert_eq!(response.focus_window, Some(scratch));
++        assert_eq!(engine.active_workspace(space), Some(target_workspace));
++        assert!(!engine.scratchpad.contains(scratch));
++        assert!(!engine.floating.is_floating(scratch));
++        assert_eq!(
++            engine
++                .virtual_workspace_manager
++                .workspace_for_window(&window_store, space, scratch),
++            Some(target_workspace)
++        );
++        let target_layout = engine
++            .workspace_layouts
++            .active(space, target_workspace)
++            .expect("target layout missing");
++        assert!(
++            engine
++                .workspace_tree(target_workspace)
++                .contains_window(target_layout, scratch),
++            "released scratchpad window must be tiled in the target workspace"
++        );
++    }
++
++    #[test]
++    fn workspace_move_releases_shown_scratchpad_and_follows_window() {
++        assert_workspace_move_releases_shown_scratchpad(1);
++    }
++
++    #[test]
++    fn same_workspace_move_still_releases_shown_scratchpad() {
++        assert_workspace_move_releases_shown_scratchpad(0);
++    }
++
      #[test]
      fn workspace_switch_response_reports_whether_workspace_changed() {
          let mut window_store = WindowStore::default();
+@@ -4579,4 +5420,83 @@ mod tests {
+             Some(target_workspace)
+         );
+     }
++
++    #[test]
++    fn floating_workspace_move_preserves_state_and_same_workspace_noops() {
++        let mut window_store = WindowStore::default();
++        let mut engine = test_engine();
++        let space = SpaceId::new(97);
++        let screen = CGRect::new(CGPoint::new(0.0, 0.0), CGSize::new(1000.0, 1000.0));
++        let pid: pid_t = 6003;
++        let wid = WindowId::new(pid, 1);
++
++        let _ = engine.handle_event(
++            &mut window_store,
++            LayoutEvent::SpaceExposed(space, screen.size),
++        );
++        let _ = engine.handle_event(
++            &mut window_store,
++            LayoutEvent::windows_on_screen_updated(
++                space,
++                pid,
++                vec![(
++                    wid,
++                    None,
++                    None,
++                    None,
++                    true,
++                    CGSize::new(500.0, 500.0),
++                    None,
++                    None,
++                )],
++                None,
++            ),
++        );
++        let _ = engine.handle_event(
++            &mut window_store,
++            LayoutEvent::WindowFocused(space, wid),
++        );
++        let _ = engine.handle_virtual_workspace_command(
++            &mut window_store,
++            space,
++            &LayoutCommand::CreateWorkspace,
++        );
++        let workspaces = engine.virtual_workspace_manager_mut().list_workspaces(space).to_vec();
++
++        engine.remove_window_from_all_tiling_trees(wid);
++        engine.floating.add_floating(wid);
++        engine.floating.add_active(space, wid.pid, wid);
++
++        let no_op = engine.handle_virtual_workspace_command(
++            &mut window_store,
++            space,
++            &LayoutCommand::MoveWindowToWorkspace {
++                workspace: WorkspaceSelector::Index(0),
++                follow: true,
++                window_id: None,
++            },
++        );
++        assert!(!no_op.changed);
++        assert!(engine.floating.is_floating(wid));
++
++        let moved = engine.handle_virtual_workspace_command(
++            &mut window_store,
++            space,
++            &LayoutCommand::MoveWindowToWorkspace {
++                workspace: WorkspaceSelector::Index(1),
++                follow: true,
++                window_id: None,
++            },
++        );
++        assert!(moved.changed);
++        assert_eq!(moved.focus_window, Some(wid));
++        assert_eq!(engine.active_workspace(space), Some(workspaces[1].0));
++        assert!(engine.floating.is_floating(wid));
++        assert_eq!(
++            engine
++                .virtual_workspace_manager
++                .workspace_for_window(&window_store, space, wid),
++            Some(workspaces[1].0)
++        );
++    }
+ }
 diff --git a/src/layout_engine/engine/persistence/mod.rs b/src/layout_engine/engine/persistence/mod.rs
 index 3f4528a..384597f 100644
 --- a/src/layout_engine/engine/persistence/mod.rs
