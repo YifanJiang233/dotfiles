@@ -13,19 +13,21 @@ document.
 | Item | Current value |
 | --- | --- |
 | Upstream repository | `https://github.com/acsandmann/rift` |
-| Pinned upstream commit | `46f5ba06781ac73d145780d2dbfe96516c8ccfb0` |
-| Pinned commit date/subject | `2026-08-30` — `fix: reject ordered-out windows during app discovery (#460)` |
-| Personal formula version | `0.5.3-native.2` |
-| Source archive SHA-256 | `3070454428b3edc9442dcd0c035c79d896499b205e1ea27f5f88f3b1fbea21e7` |
-| Canonical patch SHA-256 | `3d7f000dc45e2a6059beaa2d64e6900af9c592ea691c3c8076ff05841761ac7f` |
-| Official rollback keg installed | `rift 0.5.3` |
+| Pinned upstream commit | `b67cf2efc447174ca9e0cd10f558a224ed32b038` (`v0.5.5`) |
+| Pinned commit date/subject | `2026-08-31` — `fix: warp cursor to the focused window on focus_display` |
+| Personal formula version | `0.5.5-native.3` |
+| Source archive SHA-256 | `9efe7ec9550627abd7f272b9d6f62a8de9f2ff3225ef5eaf830c13c6d2faa4ee` |
+| Canonical patch SHA-256 | `597191f17484d9b9f2d6bf47b948bb433d263f56e13849279268ebc6cdd9df8a` |
+| Official rollback keg installed | `rift 0.5.5` (pinned; Accessibility reauthorization may be required) |
 | Active service | `git.acsandmann.rift` via `/opt/homebrew/bin/rift` |
 | Personal formula repository | `~/.config/rift/homebrew-tap` |
 | Registered Homebrew tap | `yifan/rift` |
 | Chezmoi source repository | `~/.local/share/chezmoi` |
 
-Homebrew currently offers official Rift `0.5.4`, but this machine retains
-official Rift `0.5.3` as the tested rollback target. Pin it so an unrelated
+Homebrew currently offers official Rift `0.5.5`, and this machine retains that
+version as the rollback source. Accessibility authorization is path and binary
+identity sensitive, so a rollback may require the documented reauthorization
+step before it can answer CLI queries. Keep it pinned so an unrelated
 `brew upgrade` does not replace that fallback:
 
 ```sh
@@ -37,16 +39,49 @@ Only run `brew unpin rift` when intentionally testing or adopting a newer
 official release. The personal build is independently pinned by its exact
 archive URL, source checksum, embedded patch, and formula version.
 
-The `0.5.3-native.2` string is the personal Homebrew version label. The pinned
-commit is not the commit referenced by upstream's `v0.5.3` tag (`6c64d8b`), and
-the root Cargo package reports `rift-wm 0.1.0`. Treat the full commit hash—not
-the label or Cargo package version—as the authoritative source identity.
+The `0.5.5-native.3` string is the personal Homebrew version label. The pinned
+commit is the exact commit referenced by upstream's `v0.5.5` tag, while the
+root Cargo package reports `rift-wm 0.1.0`. Treat the full commit hash—not the
+formula label or Cargo package version—as the authoritative source identity.
 
 Use Rift's built-in `rift service` commands for startup. Do not run the personal
 build through `brew services`: that agent uses the opt-prefix path, while macOS
 Accessibility authorization for this ad-hoc-signed command-line tool is
 path-sensitive. The supported agent keeps the launch path at the linked
 `/opt/homebrew/bin/rift`; `homebrew.mxcl.rift-native` must remain unloaded.
+
+## Sleep and display-wake arrangement persistence
+
+The native.3 patch routes macOS screen sleep/wake notifications through the
+existing lifecycle quarantine, as well as system sleep/wake. Separate screen
+and system sleep flags prevent an overlapping wake event from releasing the
+quarantine early. These notifications use the shared NSWorkspace notification
+center, as required by [Apple's documentation](https://developer.apple.com/documentation/appkit/nsworkspace/screensdidsleepnotification).
+
+Recovery waits for a populated managed-space inventory. If a native Space ID
+or display disappears, matching recovery observations are required before
+accepting the change. A confirmed same-display native ID replacement uses the
+existing atomic space remap to retain virtual workspace IDs, assignments,
+active/previous workspace, and layout trees. Existing native Spaces are never
+merged merely because the user switched between them. Disconnected display
+history remains available for later reattachment; an unplugged monitor does
+not indefinitely block the remaining displays.
+
+The regression suite covers empty and partial inventories, ordinary Space
+switches during wake, global ownership on another display, staggered display
+reattachment, unplugged displays, overlapping power notifications, and exact
+reactor workspace/tree preservation. This change is scoped to in-process
+sleep/wake recovery, not restart or reboot restoration.
+
+Validation on 2026-09-05: library suite 578/578; CLI suite 3/3; locked release
+build, Homebrew upgrade/test, and code signature verification pass. The patched
+upstream archive matches every tracked file of the tested source. Activation
+restored the saved 12-workspace arrangement exactly. One live five-second
+display sleep/wake cycle preserved window membership, layout trees, and active
+workspace 2, and emitted a lifecycle recovery acknowledgement. Full system
+hibernation and prolonged sleep were not exercised live. The original logs showed a display-off interval; the
+native-ID replacement defect was reproduced by event tests, not established
+as the exact cause of that historical incident.
 
 ## Sources of truth
 
@@ -55,6 +90,7 @@ The maintained artifacts are:
 ```text
 ~/.config/rift/
 ├── PATCHING.md
+├── SKETCHYBAR_COMPATIBILITY_0.5.5.md
 ├── config.toml
 ├── patches/
 │   └── native-autotiling.patch
@@ -179,6 +215,12 @@ The scratchpad must preserve these invariants:
   activates and focuses that workspace.
 - Membership and the currently shown member are serialized with layout state;
   the scoped live-restore limitation is documented below.
+- `scratchpad show` with no shown or focused window is a safe no-op instead of
+  treating `None == None` as a shown-window match and aborting the reactor.
+- Wake-time temporary window removal preserves membership, clears only an
+  unavailable shown marker, and lets later identity rekeying retain MRU order.
+- Unmatched persisted identities are pruned from scratchpad state independently;
+  one stale member cannot poison the remaining live members.
 
 The reserved workspace is configuration, not an automatically created special
 workspace. Its name must remain exactly `__scratchpad`; renaming or removing it
@@ -204,7 +246,7 @@ intermediate sizing glitches that the native patch was designed to remove.
 
 ## Patch code map
 
-The patch currently changes eleven upstream files.
+The patch currently changes twelve upstream files.
 
 ### `crates/rift-protocol/src/commands.rs`
 
@@ -239,8 +281,8 @@ This is the integration point for both features:
 
 - Applies the autotiling flag during startup and configuration reload.
 - Captures the selected tiled frame before insertion.
-- Inserts multiple newly discovered windows one at a time with a recomputed
-  anchor and restored selection.
+- Hooks focused-leaf insertion into upstream's per-window `WindowObserved`
+  admission path, recomputing the anchor for every newly admitted window.
 - Defines `ScratchpadState`, including member ordering and the shown member.
 - Integrates scratchpad state with window removal, process removal, and window
   ID rekeying.
@@ -248,12 +290,21 @@ This is the integration point for both features:
 - Shares one release transition between explicit `scratchpad release` and a
   move-and-follow command targeting the focused shown scratchpad window.
 - Keeps globally tracked floating state separate from the tiled tree.
+- Makes showing atomic with respect to workspace assignment and validates a
+  shown identity before hiding it.
+- Tests empty, one-, two-, three-, and eight-member wake/restart states, rapid
+  show/hide cycles, stale shown identities, rekeying, and temporary removal.
 - Tests that scratchpad operations and workspace relocation leave tiled frames
   unchanged before final native release.
 
 ### `src/layout_engine/engine/persistence/mod.rs`
 
 Exposes `ScratchpadState` to the persistence module.
+
+### `src/layout_engine/engine/persistence/reconcile.rs`
+
+Removes unmatched persisted identities from scratchpad membership at the same
+transaction boundary that removes their tiled, floating, and fingerprint state.
 
 ### `src/layout_engine/engine/persistence/snapshot.rs`
 
@@ -262,7 +313,8 @@ the ability to read layouts that predate the field.
 
 ### `src/layout_engine/engine/persistence/tests.rs`
 
-Tests that native scratchpad membership and shown state round-trip through RON.
+Tests that native scratchpad membership and shown state round-trip through RON,
+and that stale members are pruned independently at every MRU position.
 
 ### `src/layout_engine/systems.rs`
 
@@ -311,6 +363,9 @@ a virtual workspace.
   are the highest-conflict rebase surfaces. Preserve upstream discovery
   filtering, selection restoration, fullscreen/group checks, and exact tree
   weights while resolving them.
+- Rift `0.5.5` owns per-window discovery and guarantees that observing one
+  window cannot rewrite sibling topology. Do not restore the removed app-wide
+  `WindowsOnScreenUpdated` reconciliation path during future rebases.
 - `conflicts_with "rift"` allows retaining both kegs but prevents linking both.
   Recheck this behavior before every formula cutover rather than assuming a
   future Homebrew version handles the conflict identically.
@@ -374,17 +429,18 @@ Keep the currently active Rift service running during source work and tests.
 ### 2. Review upstream overlap before resolving conflicts
 
 Review every upstream change between the old and new pins that touches one of
-the eleven files in the code map:
+the twelve files in the code map:
 
 ```sh
 git -C "$work_dir/rift" log --oneline \
-  46f5ba06781ac73d145780d2dbfe96516c8ccfb0..<new-upstream-commit> -- \
+  b67cf2efc447174ca9e0cd10f558a224ed32b038..<new-upstream-commit> -- \
   crates/rift-protocol/src/commands.rs \
   src/actor/reactor/events/command.rs \
   src/bin/rift-cli.rs \
   src/common/config.rs \
   src/layout_engine/engine.rs \
   src/layout_engine/engine/persistence/mod.rs \
+  src/layout_engine/engine/persistence/reconcile.rs \
   src/layout_engine/engine/persistence/snapshot.rs \
   src/layout_engine/engine/persistence/tests.rs \
   src/layout_engine/systems.rs \
@@ -422,6 +478,11 @@ cargo test native_autotile_keeps_equal_weights_when_constraints_change_physical_
 cargo test traditional_native_autotiling_is_opt_in
 cargo test native_scratchpad_show_and_hide_never_change_tiled_frames
 cargo test native_scratchpad_membership_round_trips_through_ron
+cargo test scratchpad_show_with_no_members_and_no_focus_is_a_safe_noop
+cargo test scratchpad_show_after_restore_is_safe_for_any_member_count
+cargo test stale_shown_and_focused_identity_falls_back_to_the_newest_live_member
+cargo test temporary_window_removal_preserves_rekeyed_scratchpad_membership
+cargo test discarded_restored_scratchpad_members_are_pruned_independently
 cargo test scratchpad_release_uses_typed_workspace_selector
 cargo test workspace_move_releases_shown_scratchpad_and_follows_window
 cargo test same_workspace_move_still_releases_shown_scratchpad
@@ -440,10 +501,12 @@ A full-suite failure is acceptable only when the exact same test fails at the
 same target upstream commit in a second pristine checkout. Record the command,
 test name, and both outcomes. Never label a new or changed failure as baseline.
 
-At the current pin, `cargo test --lib` passes 547 of 548 tests. The sole failure,
-`actor::reactor::tests::topology_change_clears_stale_pending_hide_target_before_next_workspace_layout`,
-reproduces unchanged in pristine upstream. Re-establish this comparison after
-every upstream change instead of assuming it remains valid.
+At the current pin, `cargo test --lib -- --test-threads=1` has produced both a
+clean 562/562 run and a 561/562 run. The intermittent, order-dependent test is
+`actor::reactor::tests::topology_change_clears_stale_pending_hide_target_before_next_workspace_layout`;
+run in isolation, it fails identically in patched and pristine `v0.5.5`.
+Re-establish this comparison after every upstream change instead of assuming it
+remains valid.
 
 The current upstream also fails its strict Clippy baseline under Homebrew Rust
 1.97, and its rustfmt settings require nightly. Do not mass-format the source or
@@ -702,7 +765,7 @@ Then:
 
 1. Stop the shared `git.acsandmann.rift` service through the currently linked
    `rift` binary.
-2. Comment out or remove `autotile_focused_leaf = true`. Official Rift `0.5.3`
+2. Comment out or remove `autotile_focused_leaf = true`. Official Rift `0.5.5`
    does not know this field and can fail while parsing the configuration.
 3. Unlink the personal keg and link the retained official keg.
 4. In System Settings > Privacy & Security > Accessibility, remove stale Rift
@@ -787,6 +850,10 @@ Add one entry for every local revision or upstream rebase.
 | --- | --- | --- | --- | --- | --- |
 | 2026-08-31 | — | `46f5ba06781ac73d145780d2dbfe96516c8ccfb0` | `0.5.3-native.1` | `24b2d3491170e43401c4e07f25fd2c379cc0bd7035559a31743b6f4d852ffb98` | Focused autotiling (3), scratchpad/persistence (2), and Rift CLI (3) tests pass; release build passes; full library suite 547/548 with the sole failure reproduced in pristine upstream; formula embedded patch byte-identical and applies to the pinned archive; live service, workspace, subscriptions, scratchpad, and ten-window behavior verified. |
 | 2026-09-01 | `46f5ba06781ac73d145780d2dbfe96516c8ccfb0` | `46f5ba06781ac73d145780d2dbfe96516c8ccfb0` | `0.5.3-native.2` | `3d7f000dc45e2a6059beaa2d64e6900af9c592ea691c3c8076ff05841761ac7f` | Unified move-and-follow releases a focused shown scratchpad while preserving ordinary tiled/floating behavior and same-workspace no-op semantics; focused regressions and release build pass; full library suite is 552/553 with the sole failure reproduced in pristine upstream; formula build and smoke test pass; live workspaces, layout modes, metrics, and four SketchyBar subscriptions verified after reauthorizing Accessibility and switching service ownership to `git.acsandmann.rift`; manual shortcut acceptance remains pending. |
+| 2026-09-02 | `46f5ba06781ac73d145780d2dbfe96516c8ccfb0` | `b67cf2efc447174ca9e0cd10f558a224ed32b038` (`v0.5.5`) | `0.5.5-native.1` | `ee54b3f35c8b8d241038f62ea2170ef1ce307d1eecd4bb92557f262112c640b5` | Dropped the obsolete app-wide discovery reconciliation and adopted upstream per-window admission; updated three local tests to `WindowObserved`; autotiling 4/4, scratchpad 4/4, workspace-move 3/3, CLI 3/3, release build, formula build, codesign, and formula smoke test pass. The full suite produced a clean 562/562 run; one reactor test remains order-dependent and fails identically in isolation on patched and pristine `v0.5.5`. Live service exposes 12 traditional workspaces, metrics, and four deduplicated SketchyBar subscriptions; a clean SketchyBar restart verified active highlighting, empty-workspace hiding, front-app text, and native app icon. Added bounded startup subscription retries and corrected `query layout --space-id`. Manual ten-window and scratchpad acceptance remains pending. Official `rift 0.5.3` remains pinned but requires Accessibility reauthorization before rollback. |
+| 2026-09-02 | `b67cf2efc447174ca9e0cd10f558a224ed32b038` (`v0.5.5`) | `b67cf2efc447174ca9e0cd10f558a224ed32b038` (`v0.5.5`) | `0.5.5-native.2` | `911c871c9665f672de62815b0320f6ca7613e18de6c3be3569d456fe322ab653` | Fixed the reactor abort after wake/restart when both shown scratchpad and focused window were absent; validates shown identities before hiding, makes showing atomic after workspace assignment, preserves membership through temporary wake-time removal/rekeying, and prunes stale restored members independently. The exact production panic is covered for 0, 1, 2, 3, and 8 members plus 20 rapid show/hide cycles per case. Scratchpad lifecycle tests, CLI 3/3, release build, patch checks, and five repeated full-suite runs pass. Homebrew build/test, codesign, GUI-domain startup, 12 workspaces, metrics, and four SketchyBar subscriptions pass on the installed binary. Accessibility identity reevaluation caused one clean startup retry without a reactor abort. Official `rift 0.5.5` remains pinned as rollback. Five-cycle hibernate acceptance remains pending. |
+
+| 2026-09-05 | `b67cf2efc447174ca9e0cd10f558a224ed32b038` (`v0.5.5`) | `b67cf2efc447174ca9e0cd10f558a224ed32b038` (`v0.5.5`) | `0.5.5-native.3` | `597191f17484d9b9f2d6bf47b948bb433d263f56e13849279268ebc6cdd9df8a` | Added screen sleep/wake lifecycle handling and overlap-safe sleep state; recover native Space ID replacements with inventory validation, delayed-snapshot retention, and disconnected-display history. Library 578/578, CLI 3/3, locked release build, pristine archive/patch identity, Homebrew build/test, and codesign pass. Activated service and restored all 12 workspaces exactly. One live display sleep/wake cycle preserved membership, trees, and active workspace; lifecycle acknowledgement observed. Initial Accessibility reevaluation preceded successful startup; no automated permission changes were needed. Full hibernate/prolonged-sleep acceptance remains pending. Native.2 and official 0.5.5 retained. |
 
 For future entries, include the exact failing test names when comparing a
 baseline, the manual acceptance result, and whether Accessibility had to be

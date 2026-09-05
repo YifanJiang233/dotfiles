@@ -33,8 +33,8 @@ default_disable = false
 # - mouse_follows_focus: when focus changes, move the mouse to the focused window
 # - mouse_hides_on_focus: hide the mouse cursor after focusing a window
 focus_follows_mouse  = true
-mouse_follows_focus  = true
-mouse_hides_on_focus = true
+mouse_follows_focus  = false
+mouse_hides_on_focus = false
 # focus_follows_mouse_disable_hotkey temporarily suspends focus-follows-mouse while held
 # e.g. "Fn"; omit or set to null to keep focus-follows-mouse always active
 #focus_follows_mouse_disable_hotkey = "Fn"
@@ -286,7 +286,7 @@ workspace_names = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "__s
 # By default there are no app rules; add or uncomment rules below as needed.
 app_rules = [
   { title_substring = "Setting", floating = true },
-  { title_substring = "Preference", floating = true },
+  { title_substring = "Preferences", floating = true },
   { title_substring = "Maple", floating = true },
 ]
 

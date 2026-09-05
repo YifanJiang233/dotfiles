@@ -36,7 +36,7 @@ if [ -n "$active_space_id" ]; then
     exit 0
   }
   active_index=$(
-    "$RIFT_CLI" query layout "$active_space_id" 2>/dev/null |
+    "$RIFT_CLI" query layout --space-id "$active_space_id" 2>/dev/null |
       "$JQ" -r '(.workspace_id // .workspace_index // empty) | tostring'
   ) || active_index=""
 else

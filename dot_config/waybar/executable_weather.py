@@ -84,38 +84,14 @@ def save_cache(data):
         pass
 
 
-def center_tooltip(text):
-    def vwidth(s):
-        width = 0
-        for c in s:
-            code = ord(c)
-            if 0xFE00 <= code <= 0xFE0F:
-                continue
-            width += 2 if code > 0x2E80 else 1
-        return width
-
-    lines = text.split("\n")
-    max_w = max((vwidth(l) for l in lines), default=0)
-    out = []
-    for l in lines:
-        if not l:
-            out.append("")
-        else:
-            w = vwidth(l)
-            pad = max(0, max_w - w)
-            left_pad = pad // 2
-            right_pad = pad - left_pad
-            out.append(" " * left_pad + l + " " * right_pad)
-    return "\n".join(out)
-
-
 if "--open" in sys.argv or "-o" in sys.argv:
     cached_data = load_cache()
     url = "https://wttr.in/"
     if cached_data and isinstance(cached_data, dict) and "url" in cached_data:
         url = cached_data["url"]
+    opener = "open" if sys.platform == "darwin" else "xdg-open"
     subprocess.Popen(
-        ["xdg-open", url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        [opener, url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
     sys.exit(0)
 
@@ -178,10 +154,19 @@ try:
 
     icon = WEATHER_CODES.get(code, "✨")
 
-    loc_line = f"📍 {city_str}\n\n" if city_str else ""
     text = f"{temp}°C {icon}"
-    raw_tooltip = f"{loc_line}{desc} {temp}°C\nFeels like: {feels_like}°C\nWind: {wind}Km/h\nHumidity: {humidity}%"
-    tooltip = center_tooltip(raw_tooltip)
+    tooltip_lines = []
+    if city_str:
+        tooltip_lines.append(f"📍 {city_str}")
+    tooltip_lines.extend(
+        [
+            f"{desc} {temp}°C",
+            f"Feels like: {feels_like}°C",
+            f"Wind: {wind}Km/h",
+            f"Humidity: {humidity}%",
+        ]
+    )
+    tooltip = "\n".join(tooltip_lines)
 
     result = {"text": text, "tooltip": tooltip, "class": "weather", "url": url_browser}
     save_cache(result)
@@ -198,7 +183,7 @@ except Exception as e:
             json.dumps(
                 {
                     "text": "☔",
-                    "tooltip": center_tooltip("Weather unavailable (Offline)\nClick to refresh when online"),
+                    "tooltip": "Weather unavailable (Offline)\nClick to refresh when online",
                     "class": "offline",
                 }
             )
