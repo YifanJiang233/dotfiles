@@ -17,13 +17,5 @@ sketchybar --add item volume right \
     label.padding_right=0 \
     padding_left=5 \
     padding_right=5 \
-    popup.align=right \
-    popup.height=22 \
-    popup.y_offset=4 \
-    popup.background.color="$SURFACE0" \
-    popup.background.corner_radius=9 \
-    popup.background.border_color="$SURFACE2" \
-    popup.background.border_width=1 \
-    popup.background.padding_left=12 \
-    popup.background.padding_right=12 \
+    "${tooltip_defaults[@]}" \
   --subscribe volume volume_change system_woke mouse.entered mouse.exited

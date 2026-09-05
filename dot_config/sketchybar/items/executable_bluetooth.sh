@@ -2,7 +2,7 @@
 
 sketchybar --add item bluetooth right \
   --set bluetooth \
-    update_freq=30 \
+    update_freq=5 \
     script="$PLUGIN_DIR/bluetooth.sh" \
     icon.drawing=on \
     icon.font="JetBrains Mono:Bold:15.0" \
@@ -16,13 +16,5 @@ sketchybar --add item bluetooth right \
     label.padding_right=0 \
     padding_left=5 \
     padding_right=5 \
-    popup.align=right \
-    popup.height=22 \
-    popup.y_offset=4 \
-    popup.background.color="$SURFACE0" \
-    popup.background.corner_radius=9 \
-    popup.background.border_color="$SURFACE2" \
-    popup.background.border_width=1 \
-    popup.background.padding_left=12 \
-    popup.background.padding_right=12 \
+    "${tooltip_defaults[@]}" \
   --subscribe bluetooth mouse.entered mouse.exited system_woke

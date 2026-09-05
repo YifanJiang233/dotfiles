@@ -56,3 +56,17 @@ popup_defaults=(
   popup.blur_radius=5
   popup.y_offset=4
 )
+
+# Shared appearance for every hover tooltip. Text remains fully opaque.
+tooltip_defaults=(
+  popup.align=center
+  popup.height=22
+  popup.y_offset=4
+  popup.blur_radius=5
+  popup.background.color="0xd9${SURFACE0:4}"
+  popup.background.corner_radius=9
+  popup.background.border_color="$SURFACE2"
+  popup.background.border_width=1
+  popup.background.padding_left=12
+  popup.background.padding_right=12
+)

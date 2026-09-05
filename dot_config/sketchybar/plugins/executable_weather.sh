@@ -33,7 +33,7 @@ WEATHER_SCRIPT="$HOME/.config/sketchybar/weather.py"
 
 if [ ! -x "$PYTHON" ] || [ ! -x "$JQ" ] || [ ! -f "$WEATHER_SCRIPT" ]; then
   set_weather_display "☔"
-  right_tooltip_update "$NAME" "Weather unavailable" center
+  right_tooltip_update "$NAME" "Weather unavailable"
   exit 0
 fi
 
@@ -51,4 +51,4 @@ fi
 [ -n "$weather_tooltip" ] || weather_tooltip="Weather unavailable"
 
 set_weather_display "$weather_text"
-right_tooltip_update "$NAME" "$weather_tooltip" center
+right_tooltip_update "$NAME" "$weather_tooltip"

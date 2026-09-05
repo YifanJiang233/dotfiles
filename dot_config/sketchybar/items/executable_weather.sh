@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+sketchybar --load-font "$CONFIG_DIR/fonts/Twemoji.Mozilla.ttf"
+
+# COLR glyphs report zero path bounds; reserve space for the weather emoji.
 sketchybar --add item weather right \
   --set weather \
     update_freq=1800 \
@@ -10,20 +13,13 @@ sketchybar --add item weather right \
     icon.color="$TEXT" \
     icon.padding_left=0 \
     icon.padding_right=4 \
-    label.font="Apple Color Emoji:Regular:15.0" \
+    label.font="Twemoji Mozilla:Regular:15.0" \
+    label.width=20 \
     label.color="$TEXT" \
     label.y_offset=1 \
     label.padding_left=0 \
     label.padding_right=0 \
     padding_left=5 \
     padding_right=5 \
-    popup.align=right \
-    popup.height=22 \
-    popup.y_offset=4 \
-    popup.background.color="$SURFACE0" \
-    popup.background.corner_radius=9 \
-    popup.background.border_color="$SURFACE2" \
-    popup.background.border_width=1 \
-    popup.background.padding_left=12 \
-    popup.background.padding_right=12 \
+    "${tooltip_defaults[@]}" \
   --subscribe weather weather_refresh mouse.entered mouse.exited
