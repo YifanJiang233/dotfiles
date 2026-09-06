@@ -1,0 +1,85 @@
+# Shared Apple Silicon Mac environment. Managed by chezmoi.
+# Edit: chezmoi edit ~/.Brewfile
+# Install: brew bundle install --file="$HOME/.Brewfile" --no-upgrade
+# Dependencies are resolved by Homebrew; no services start automatically.
+
+# Custom package sources
+tap "abue-ammar/tinycast"
+tap "felixkratz/formulae"
+tap "rhettbull/osxphotos"
+tap "surgedm/tap"
+tap "yifan/rift", "https://github.com/YifanJiang233/homebrew-rift.git"
+
+# Shell and navigation
+brew "antidote"
+brew "atuin"
+brew "eza"
+brew "fd"
+brew "fzf"
+brew "ripgrep"
+brew "starship"
+brew "zoxide"
+
+# Development
+brew "chezmoi"
+brew "dipc"
+brew "fnm"
+brew "gh"
+brew "gitui"
+brew "go"
+brew "jq"
+brew "neovim"
+brew "rustup"
+brew "tree-sitter-cli"
+brew "uv"
+brew "xcodes"
+
+# Research and documents
+brew "arxiv_latex_cleaner"
+brew "bib-tool"
+brew "imagemagick"
+brew "poppler"
+brew "resvg"
+brew "typst"
+
+# Files and networking
+brew "aria2"
+brew "mosh"
+brew "ouch"
+brew "sevenzip"
+brew "tailscale"
+brew "unison"
+brew "wget2"
+brew "yazi"
+
+# Media
+brew "mpd"
+brew "mpv"
+brew "nicotine-plus"
+brew "rhettbull/osxphotos/osxphotos", trusted: true
+brew "rmpc"
+brew "transmission-cli"
+
+# Desktop and system
+brew "blueutil"
+brew "btop"
+brew "felixkratz/formulae/borders", trusted: true
+brew "felixkratz/formulae/sketchybar", trusted: true
+brew "mole"
+brew "nowplaying-cli"
+brew "python"
+brew "yifan/rift/rift-native", trusted: true
+
+# Applications and fonts
+cask "abue-ammar/tinycast/tinycast-sequoia", trusted: true
+cask "claude-code"
+cask "font-jetbrains-mono-nerd-font"
+cask "font-lxgw-bright"
+cask "jellyfin"
+cask "karabiner-elements"
+cask "karing"
+cask "localsend"
+cask "musicbrainz-picard"
+cask "surgedm/tap/surge", trusted: true
+cask "wezterm"
+cask "zotero"

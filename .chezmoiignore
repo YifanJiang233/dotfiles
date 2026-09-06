@@ -1,4 +1,8 @@
+README.md
+.config/rift/homebrew-tap
+
 {{ if ne .chezmoi.os "darwin"}}
+.Brewfile
 .config/aerospace
 .config/borders
 .config/sketchybar

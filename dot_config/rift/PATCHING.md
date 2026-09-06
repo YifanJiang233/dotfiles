@@ -103,10 +103,11 @@ The maintained artifacts are:
 `__END__` line in `rift-native.rb` must be byte-for-byte identical to it. Never
 maintain the two copies by hand as independent patches.
 
-`homebrew-tap` is also a small nested Git repository. Its `.git` directory is
-local tap metadata and must not be added to Chezmoi. Add the formula file, patch,
-and this document to Chezmoi explicitly rather than recursively adding the tap
-directory.
+`homebrew-tap` is a separate private Git repository:
+`https://github.com/YifanJiang233/homebrew-rift`. Clone it to the path above for
+patch development. The formula and its Git metadata are not tracked by Chezmoi.
+Chezmoi owns the canonical patch and this document; the tap owns the installable
+formula with its generated embedded patch.
 
 The registered tap clone is normally:
 
@@ -114,8 +115,9 @@ The registered tap clone is normally:
 $(brew --repository)/Library/Taps/yifan/homebrew-rift
 ```
 
-Its origin is `~/.config/rift/homebrew-tap`. Commit the source tap first, then
-fast-forward the registered clone.
+Its origin is `https://github.com/YifanJiang233/homebrew-rift.git`. Commit and
+push the source tap first, then fast-forward the registered clone. Configure
+GitHub authentication with `gh auth login` and `gh auth setup-git` on a new Mac.
 
 ## Version policy
 
@@ -675,6 +677,7 @@ clone:
 ```sh
 git -C "$HOME/.config/rift/homebrew-tap" add Formula/rift-native.rb
 git -C "$HOME/.config/rift/homebrew-tap" commit -m "feat: update pinned Rift native build"
+git -C "$HOME/.config/rift/homebrew-tap" push
 
 tap_clone="$(brew --repository)/Library/Taps/yifan/homebrew-rift"
 git -C "$tap_clone" pull --ff-only
@@ -686,7 +689,6 @@ Add only the maintained files to Chezmoi and inspect its diff before committing:
 chezmoi add \
   "$HOME/.config/rift/config.toml" \
   "$HOME/.config/rift/patches/native-autotiling.patch" \
-  "$HOME/.config/rift/homebrew-tap/Formula/rift-native.rb" \
   "$HOME/.config/rift/PATCHING.md" \
   "$HOME/.config/karabiner/karabiner.json"
 
@@ -840,7 +842,7 @@ history and possible restoration:
 ```
 
 `brew untap` removes the registered clone under Homebrew. It does not remove the
-source tap repository in `~/.config/rift/homebrew-tap` or its Chezmoi copy.
+source tap repository in `~/.config/rift/homebrew-tap` or its private GitHub remote.
 
 ## Maintenance history
 
