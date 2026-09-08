@@ -5,7 +5,7 @@ sketchybar --load-font "$CONFIG_DIR/fonts/Twemoji.Mozilla.ttf"
 # COLR glyphs report zero path bounds; reserve space for the weather emoji.
 sketchybar --add item weather right \
   --set weather \
-    update_freq=1800 \
+    update_freq=300 \
     script="$PLUGIN_DIR/weather.sh" \
     click_script="$PLUGIN_DIR/weather_click.sh" \
     icon.drawing=on \

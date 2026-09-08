@@ -1,4 +1,6 @@
 README.md
+.config/weather/location.json
+.config/weather/__pycache__
 .config/rift/homebrew-tap
 
 {{ if ne .chezmoi.os "darwin"}}
@@ -21,6 +23,7 @@ README.md
 .config/systemd
 .config/tofi
 .config/waybar
+.local/share/applications/weather-location.desktop
 .config/wluma
 .config/xdg-desktop-portal
 .config/mimeapps.list

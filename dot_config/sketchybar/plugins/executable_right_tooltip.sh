@@ -14,6 +14,31 @@ right_tooltip_hover() {
   esac
 }
 
+right_tooltip_center_rows() {
+  local parent="$1"
+  local count="$2"
+  local index width extra
+  local max_width=0
+  local -a widths args
+
+  # Measure rendered rows, including their existing 12-point edge insets.
+  # Center each complete row so the pin stays beside its natural-width label.
+  for ((index = 0; index < count; index++)); do
+    width=$(sketchybar --query "${parent}.tooltip.line.${index}" |
+      /opt/homebrew/bin/jq -er '.label.width + (if .icon.drawing == "on" then .icon.width else 0 end)') || return 1
+    widths[index]="$width"
+    [ "$width" -le "$max_width" ] || max_width="$width"
+  done
+
+  for ((index = 0; index < count; index++)); do
+    extra=$((max_width - widths[index]))
+    args+=(--set "${parent}.tooltip.line.${index}"
+      padding_left=$((extra / 2))
+      padding_right=$((extra - extra / 2)))
+  done
+  sketchybar "${args[@]}" >/dev/null 2>&1
+}
+
 right_tooltip_update() {
   local parent="$1"
   local tooltip="$2"
@@ -21,13 +46,6 @@ right_tooltip_update() {
   local wrapped_line
   local emoji
   local text_padding
-  local text_right_padding
-  local row_right_padding
-  local alignment=left
-  local row_width=dynamic
-  local label_width
-  local content
-  local content_width
   local cache_owner="${USER:-$(id -u)}"
   local cache_file="${TMPDIR:-/tmp}/sketchybar-right-tooltip-${cache_owner}-${parent}"
   local cache_key="$tooltip"
@@ -56,37 +74,17 @@ right_tooltip_update() {
     lines=("Unavailable")
   fi
 
-  if [ "$parent" = "weather" ]; then
-    alignment=center
-    row_width=152
-    for line in "${lines[@]}"; do
-      content="$line"
-      case "$content" in
-        "📍 "*|"⚠️ "*) content="${content#* }" ;;
-      esac
-      content_width=$((${#content} * 9 + 64))
-      [ "$content_width" -le "$row_width" ] || row_width="$content_width"
-    done
-  fi
-
   args=(--remove "/^${parent}\\.tooltip\\.line\\.[0-9][0-9]*$/")
 
   for line in "${lines[@]}"; do
     emoji=""
     text_padding=12
-    text_right_padding=12
-    row_right_padding=0
-    label_width="$row_width"
     if [ "$parent" = "weather" ]; then
       case "$line" in
         "📍 "*|"⚠️ "*)
           emoji="${line%% *}"
           line="${line#* }"
           text_padding=0
-          text_right_padding=0
-          # Balance the emoji slot so the text stays on the popup centerline.
-          label_width=$((row_width - 64))
-          row_right_padding=32
           ;;
       esac
     fi
@@ -99,29 +97,33 @@ right_tooltip_update() {
         label.color="$TEXT"
         label.font="JetBrains Mono:Bold:15.0"
         label.padding_left="$text_padding"
-        label.padding_right="$text_right_padding"
-        label.width="$label_width"
-        label.align="$alignment"
+        label.padding_right=12
+        label.width=dynamic
+        label.align=left
         padding_left=0
-        padding_right="$row_right_padding"
+        padding_right=0
     )
     if [ -n "$emoji" ]; then
-      # Fixed icon width includes the 12-point inset plus 20 points for COLR art.
+      # Match the shared 12-point inset, then a 20-point emoji and 4-point gap.
+      # COLR emoji need an explicit width because they report zero path bounds.
       args+=(--set "$item"
         icon="$emoji"
         icon.drawing=on
         icon.font="Twemoji Mozilla:Regular:15.0"
         icon.color="$TEXT"
-        icon.width=32
+        icon.width=36
         icon.align=left
         icon.padding_left=12
-        icon.padding_right=0
+        icon.padding_right=4
       )
     fi
     index=$((index + 1))
   done
 
   if sketchybar "${args[@]}" >/dev/null 2>&1; then
+    if [ "$parent" = "weather" ]; then
+      right_tooltip_center_rows "$parent" "$index" || return 1
+    fi
     printf '%s' "$cache_key" > "$cache_file"
   fi
 }

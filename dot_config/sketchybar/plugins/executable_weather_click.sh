@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PYTHON="/opt/homebrew/bin/python3"
-WEATHER_SCRIPT="$HOME/.config/sketchybar/weather.py"
+WEATHER_SCRIPT="$HOME/.config/weather/weather.py"
 
 [ -x "$PYTHON" ] || exit 0
 [ -f "$WEATHER_SCRIPT" ] || exit 0

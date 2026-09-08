@@ -78,13 +78,13 @@
 	    "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%"
     },
     "custom/weather": {
-        "exec": "python3 ~/.config/waybar/weather.py",
+        "exec": "python3 ~/.config/weather/weather.py",
         "return-type": "json",
-        "interval": 1800,
+        "interval": 300,
         "format": "{}",
         "tooltip": true,
         "signal": 8,
-        "on-click": "python3 ~/.config/waybar/weather.py --refresh && pkill -RTMIN+8 waybar",
-        "on-click-right": "python3 ~/.config/waybar/weather.py --open"
+        "on-click": "python3 ~/.config/weather/weather.py --refresh && pkill -RTMIN+8 waybar",
+        "on-click-right": "python3 ~/.config/weather/weather.py --open"
     }
 }

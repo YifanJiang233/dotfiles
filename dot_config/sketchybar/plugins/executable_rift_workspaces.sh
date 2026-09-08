@@ -16,6 +16,11 @@ if [ ! -x "$RIFT_CLI" ] || [ ! -x "$JQ" ]; then
   exit 0
 fi
 
+# Serialize queries and rendering so a slow older update cannot overwrite a newer one.
+mkdir -p "$STATE_DIR" || exit 0
+exec 9>"$STATE_DIR/workspace.lock" || exit 0
+/usr/bin/lockf 9 || exit 0
+
 workspace_updates=$(
   "$RIFT_CLI" query workspaces 2>/dev/null |
     "$JQ" -r --argjson workspace_label_max "$WORKSPACE_LABEL_MAX" '

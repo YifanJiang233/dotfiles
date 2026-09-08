@@ -6,7 +6,7 @@ cooldown=60
 
 # When starting up, run an initial check in case network is coming online
 sleep 3
-if python3 "$HOME/.config/waybar/weather.py" --refresh >/dev/null 2>&1; then
+if python3 "$HOME/.config/weather/weather.py" --refresh >/dev/null 2>&1; then
     pkill -RTMIN+8 waybar || true
 fi
 last_trigger=$(date +%s)
@@ -22,7 +22,7 @@ ip monitor address route | while read -r line; do
         if (( elapsed >= cooldown )); then
             # Pause briefly to allow DNS/routing to stabilize
             sleep 3
-            if python3 "$HOME/.config/waybar/weather.py" --refresh >/dev/null 2>&1; then
+            if python3 "$HOME/.config/weather/weather.py" --refresh >/dev/null 2>&1; then
                 pkill -RTMIN+8 waybar || true
                 last_trigger=$(date +%s)
             fi

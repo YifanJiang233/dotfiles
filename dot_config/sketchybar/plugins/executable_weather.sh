@@ -29,7 +29,7 @@ fi
 
 PYTHON="/opt/homebrew/bin/python3"
 JQ="/opt/homebrew/bin/jq"
-WEATHER_SCRIPT="$HOME/.config/sketchybar/weather.py"
+WEATHER_SCRIPT="$HOME/.config/weather/weather.py"
 
 if [ ! -x "$PYTHON" ] || [ ! -x "$JQ" ] || [ ! -f "$WEATHER_SCRIPT" ]; then
   set_weather_display "☔"

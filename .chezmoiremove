@@ -1,0 +1,5 @@
+{{ if eq .chezmoi.os "darwin" }}
+.config/sketchybar/weather.py
+{{ else if eq .chezmoi.os "linux" }}
+.config/waybar/weather.py
+{{ end }}

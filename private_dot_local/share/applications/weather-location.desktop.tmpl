@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Status Bar Weather Location
+Comment=Find the local city for the status bar weather forecast
+Exec=/usr/bin/python3 "{{ .chezmoi.homeDir }}/.config/weather/weather.py" --location
+NoDisplay=true
+X-Geoclue-Reason=Show the weather for the city near this computer

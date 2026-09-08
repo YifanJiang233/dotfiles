@@ -73,6 +73,7 @@ brew "yifan/rift/rift-native", trusted: true
 # Applications and fonts
 cask "abue-ammar/tinycast/tinycast-sequoia", trusted: true
 cask "claude-code"
+cask "corelocationcli"
 cask "font-jetbrains-mono-nerd-font"
 cask "font-lxgw-bright"
 cask "jellyfin"
