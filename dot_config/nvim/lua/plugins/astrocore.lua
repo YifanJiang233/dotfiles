@@ -38,6 +38,7 @@ return {
 		-- vim options can be configured here
 		options = {
 			opt = { -- vim.opt.<key>
+				timeoutlen = 1000, -- Allow time to finish multi-key mappings such as VimTeX's tss
 				relativenumber = true, -- sets vim.opt.relativenumber
 				number = true, -- sets vim.opt.number
 				spell = false, -- sets vim.opt.spell

@@ -11,15 +11,6 @@ return {
 					-- mappings seen under group name "Buffer"
 					-- tables with just a `desc` key will be registered with which-key if it's installed
 					-- this is useful for naming menus
-					["<localleader>p"] = { group = "Papis" },
-					["<localleader>pp"] = { "<cmd>Papis search<cr>", desc = "Open Picker" },
-					["<localleader>pf"] = { "<cmd>Papis at-cursor open-file<cr>", desc = "Open File Under Cursor" },
-					["<localleader>pe"] = { "<cmd>Papis at-cursor edit<cr>", desc = "Edit Entry Under Cursor" },
-					["<localleader>pn"] = { "<cmd>Papis at-cursor open-note<cr>", desc = "Open Note Under Cursor" },
-					["<localleader>pi"] = {
-						"<cmd>Papis at-cursor show-popup<cr>",
-						desc = "Show Entry Info Under Cursor",
-					},
 					["<leader>a"] = { desc = "Open Org Agenda" },
 					["<leader>z"] = { desc = "Org Capture" },
 					-- quick save
