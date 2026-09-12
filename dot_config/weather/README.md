@@ -5,8 +5,13 @@ JSON (`text`, `tooltip`, `class`) with a browser `url`. Location is checked ever
 five minutes. Left-click refreshes immediately; right-click opens the forecast.
 
 Automatic mode uses Core Location on macOS and GeoClue on Linux. Both return
-coordinates, an accuracy radius and a timestamp. The city is reverse-geocoded
-through OpenStreetMap Nominatim at city-level detail. Fixes older than five minutes or uncertain by more than
+coordinates, an accuracy radius and a timestamp. OpenStreetMap Nominatim supplies
+the place name: neighbourhood/suburb first, then borough, then city. Local names
+include the city for context, such as `Fulham, London`. If the reported uncertainty
+exceeds 1 km, only the broader city name is used. Missing map detail also results
+in a broader label. This changes the label, not the forecast provider or its
+resolution; it does not guarantee Apple Weather's place names or forecasts.
+Fixes older than five minutes or uncertain by more than
 10 km are rejected. IP geolocation is not used. Native services still depend on
 their positioning databases; the accuracy radius is an estimate, not a guarantee.
 
@@ -70,7 +75,7 @@ python3 -m unittest discover -s ~/.config/weather -p 'test_*.py'
 The location probe prints the resolved city, coordinates, source and accuracy;
 it exits nonzero with an actionable message on failure. Cached weather lives at
 `~/.cache/weather/current.json` (or under `$XDG_CACHE_HOME`). City lookups are
-cached for a day in `city.json` for matching coordinates. Requests are serialized
+cached for a day in `city.json` for matching coordinates and detail level. Requests are serialized
 and limited to at most one per second. The coordinates (rounded to four decimal
 places) are sent to Nominatim for the city name and wttr.in for the weather.
 The city override sends only the configured city to wttr.in.

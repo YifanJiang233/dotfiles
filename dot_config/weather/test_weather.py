@@ -134,8 +134,8 @@ class WeatherTests(unittest.TestCase):
                                 "city": "Greater London", "country": "United Kingdom"}}
         with patch.object(location.time, "sleep"), patch.object(location.urllib.request, "urlopen",
                 return_value=io.StringIO(json.dumps(response))) as fetch:
-            self.assertEqual(location.city_name(51.49, -0.21), "Greater London, United Kingdom")
-            self.assertEqual(location.city_name(51.49, -0.21), "Greater London, United Kingdom")
+            self.assertEqual(location.city_name(51.49, -0.21, 2000), "Greater London, United Kingdom")
+            self.assertEqual(location.city_name(51.49, -0.21, 2000), "Greater London, United Kingdom")
             self.assertEqual(fetch.call_count, 1)
             self.assertIn("zoom=10", fetch.call_args.args[0].full_url)
 
@@ -143,7 +143,39 @@ class WeatherTests(unittest.TestCase):
         with patch.object(location.time, "sleep"), patch.object(location.urllib.request, "urlopen",
                 return_value=io.StringIO('{"address":{"country":"United Kingdom"}}')):
             with self.assertRaisesRegex(location.LocationError, "city lookup"):
-                location.city_name(51.49, -0.21)
+                location.city_name(51.49, -0.21, 35)
+
+    def test_locality_priority_and_missing_fields(self):
+        address = {"neighbourhood": "West Kensington", "suburb": "Fulham",
+                   "borough": "Hammersmith and Fulham", "city": "London", "country": "United Kingdom"}
+        self.assertEqual(location.address_label(address, True), "West Kensington, London")
+        del address["neighbourhood"]
+        self.assertEqual(location.address_label(address, True), "Fulham, London")
+        del address["suburb"]
+        self.assertEqual(location.address_label(address, True), "Hammersmith and Fulham, London")
+        address["city_district"] = address.pop("borough")
+        self.assertEqual(location.address_label(address, True), "Hammersmith and Fulham, London")
+        self.assertEqual(location.address_label(address, False), "London, United Kingdom")
+        del address["city_district"]
+        self.assertEqual(location.address_label(address, True), "London, United Kingdom")
+        self.assertEqual(location.address_label({"suburb": "London", "city": "London"}, True), "London")
+
+    def test_accuracy_change_invalidates_locality_cache(self):
+        address = {"neighbourhood": "Fulham", "city": "London", "country": "United Kingdom"}
+        with patch.object(location.time, "sleep"), patch.object(location.urllib.request, "urlopen",
+                side_effect=lambda *args, **kwargs: io.StringIO(json.dumps({"address": address}))) as fetch:
+            self.assertEqual(location.city_name(51.49, -0.21, 1000), "Fulham, London")
+            self.assertIn("zoom=14", fetch.call_args.args[0].full_url)
+            self.assertEqual(location.city_name(51.49, -0.21, 1001), "London, United Kingdom")
+            self.assertIn("zoom=10", fetch.call_args.args[0].full_url)
+            self.assertEqual(fetch.call_count, 2)
+
+    def test_old_city_cache_cannot_hide_new_locality(self):
+        location.CITY_CACHE.write_text(json.dumps({"query": "51.4900,-0.2100",
+            "timestamp": time.time(), "label": "Greater London, United Kingdom"}))
+        with patch.object(location.time, "sleep"), patch.object(location.urllib.request, "urlopen",
+                return_value=io.StringIO('{"address":{"suburb":"Fulham","city":"London"}}')):
+            self.assertEqual(location.city_name(51.49, -0.21, 35), "Fulham, London")
 
     def test_macos_does_not_request_apples_reverse_geocoder(self):
         with patch.object(location.shutil, "which", return_value="CoreLocationCLI"), patch.object(

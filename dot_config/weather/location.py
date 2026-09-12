@@ -1,4 +1,4 @@
-"""City-level location for the shared status-bar weather module."""
+"""Local place names for the shared status-bar weather module."""
 
 import json
 import math
@@ -118,17 +118,37 @@ def geoclue_location():
     return data
 
 
-def city_name(lat, lon):
+def address_label(address, detailed):
+    def first(keys):
+        return next((address[key].strip() for key in keys
+                     if isinstance(address.get(key), str) and address[key].strip()), "")
+
+    city = first(("city", "town", "village", "municipality"))
+    country = first(("country",))
+    locality = first(("neighbourhood", "suburb", "quarter", "borough", "city_district")) if detailed else ""
+    if locality:
+        parts = (locality, city or country)
+    elif city:
+        parts = (city, country)
+    else:
+        raise ValueError("no locality returned")
+    return ", ".join(dict.fromkeys(part for part in parts if part))
+
+
+def city_name(lat, lon, accuracy):
     query = f"{lat:.4f},{lon:.4f}"
+    zoom = 14 if accuracy <= 1000 else 10
     try:
         cached = json.loads(CITY_CACHE.read_text())
-        if (cached["query"] == query and 0 <= time.time() - cached["timestamp"] < 86400
+        if (cached["query"] == query and cached["zoom"] == zoom
+                and 0 <= time.time() - cached["timestamp"] < 86400
                 and isinstance(cached["label"], str) and cached["label"]):
             return cached["label"]
     except (OSError, ValueError, KeyError, TypeError):
         pass
     params = urllib.parse.urlencode({"lat": f"{lat:.4f}", "lon": f"{lon:.4f}",
-                                    "format": "jsonv2", "zoom": 10, "accept-language": "en"})
+                                    "format": "jsonv2", "zoom": zoom, "accept-language": "en",
+                                    "layer": "address"})
     request = urllib.request.Request("https://nominatim.openstreetmap.org/reverse?" + params,
                                      headers={"User-Agent": "status-bar-weather/1.0"})
     # All CLI modes hold refresh.lock, so concurrent clicks/probes cannot exceed
@@ -137,10 +157,9 @@ def city_name(lat, lon):
     try:
         with urllib.request.urlopen(request, timeout=10) as response:
             address = json.load(response)["address"]
-        city = next((address[k] for k in ("city", "town", "village", "municipality") if address.get(k)), None)
-        if not isinstance(city, str) or not city:
-            raise ValueError("no city returned")
-        label = ", ".join(x for x in (city, address.get("country")) if x)
+        if not isinstance(address, dict):
+            raise ValueError("invalid address returned")
+        label = address_label(address, detailed=zoom == 14)
     except (OSError, ValueError, KeyError, TypeError) as error:
         raise LocationError("Device located, but city lookup is unavailable; click to retry") from error
     CITY_CACHE.parent.mkdir(parents=True, exist_ok=True)
@@ -148,7 +167,7 @@ def city_name(lat, lon):
     try:
         with tempfile.NamedTemporaryFile("w", dir=CITY_CACHE.parent, delete=False) as stream:
             temp_name = stream.name
-            json.dump({"query": query, "timestamp": time.time(), "label": label}, stream)
+            json.dump({"query": query, "zoom": zoom, "timestamp": time.time(), "label": label}, stream)
         os.replace(temp_name, CITY_CACHE)
     finally:
         if temp_name and os.path.exists(temp_name):
@@ -166,7 +185,7 @@ def detect_location(city=""):
     else:
         raise LocationError("Automatic location requires macOS or Linux")
     lat, lon, accuracy = validate_fix(data)
-    label = city_name(lat, lon)
+    label = city_name(lat, lon, accuracy)
     return {"query": f"{lat:.4f},{lon:.4f}", "label": label,
             "source": data["source"], "accuracy": accuracy}
 
