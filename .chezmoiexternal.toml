@@ -1,0 +1,5 @@
+[".config/aconfmgr"]
+    type = "git-repo"
+    url = "git@github.com:YifanJiang233/aconfmgr.git"
+    [".config/aconfmgr".pull]
+        args = ["--ff-only"]
