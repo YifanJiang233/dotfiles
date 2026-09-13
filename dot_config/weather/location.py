@@ -65,6 +65,8 @@ def run_helper(command):
             raise LocationError("Allow CoreLocationCLI in System Settings → Privacy & Security → Location Services")
         if "No module named 'gi'" in result.stderr or "Namespace Geoclue not available" in result.stderr:
             raise LocationError("Install GeoClue and Python GObject bindings; see weather/README.md")
+        if command[-1:] == ["--geoclue"] and "Timeout was reached" in result.stderr:
+            raise LocationError("GeoClue permission agent is unavailable; see weather/README.md")
         raise LocationError("Location helper failed; check location permission, Wi-Fi and weather/README.md")
     try:
         data = json.loads(result.stdout)
@@ -104,17 +106,43 @@ def geoclue_location():
     # Run in the system Python so distro-provided introspection bindings are visible.
     import gi
     gi.require_version("Geoclue", "2.0")
-    from gi.repository import Geoclue
+    from gi.repository import Geoclue, GLib
 
-    client = Geoclue.Simple.new_sync("weather-location", Geoclue.AccuracyLevel.NEIGHBORHOOD, None)
-    fix = client.get_location()
-    data = {
-        "latitude": fix.get_property("latitude"),
-        "longitude": fix.get_property("longitude"),
-        "accuracy": fix.get_property("accuracy"),
-        "timestamp": fix.get_property("timestamp")[0],
-        "source": "GeoClue",
-    }
+    def fix_data(fix):
+        return {
+            "latitude": fix.get_property("latitude"),
+            "longitude": fix.get_property("longitude"),
+            "accuracy": fix.get_property("accuracy"),
+            "timestamp": fix.get_property("timestamp")[0],
+            "source": "GeoClue",
+        }
+
+    # GeoClue intentionally omits BSS identifiers below STREET accuracy. Asking
+    # for NEIGHBORHOOD therefore degrades an otherwise working Wi-Fi source to
+    # its provider's coarse GeoIP fallback.
+    client = Geoclue.Simple.new_sync("weather-location", Geoclue.AccuracyLevel.STREET, None)
+    data = fix_data(client.get_location())
+    if data["accuracy"] <= 10000:
+        return data
+
+    # GeoIP commonly arrives first. Keep the main context alive briefly so a
+    # scan-backed update can replace it instead of returning the first fix.
+    loop = GLib.MainLoop()
+
+    def location_changed(*_args):
+        nonlocal data
+        data = fix_data(client.get_location())
+        if data["accuracy"] <= 10000:
+            loop.quit()
+
+    handler = client.connect("notify::location", location_changed)
+    timeout = GLib.timeout_add_seconds(15, loop.quit)
+    try:
+        loop.run()
+    finally:
+        client.disconnect(handler)
+        if GLib.MainContext.default().find_source_by_id(timeout):
+            GLib.source_remove(timeout)
     return data
 
 
@@ -135,6 +163,22 @@ def address_label(address, detailed):
     return ", ".join(dict.fromkeys(part for part in parts if part))
 
 
+def reverse_address(lat, lon, zoom):
+    params = urllib.parse.urlencode({"lat": f"{lat:.4f}", "lon": f"{lon:.4f}",
+                                    "format": "jsonv2", "zoom": zoom, "accept-language": "en",
+                                    "layer": "address"})
+    request = urllib.request.Request("https://nominatim.openstreetmap.org/reverse?" + params,
+                                     headers={"User-Agent": "status-bar-weather/1.0"})
+    # All CLI modes hold refresh.lock, so concurrent clicks/probes cannot exceed
+    # Nominatim's one-request-per-second limit. Cache repeated queries for a day.
+    time.sleep(1)
+    with urllib.request.urlopen(request, timeout=10) as response:
+        address = json.load(response)["address"]
+    if not isinstance(address, dict):
+        raise ValueError("invalid address returned")
+    return address
+
+
 def city_name(lat, lon, accuracy):
     query = f"{lat:.4f},{lon:.4f}"
     zoom = 14 if accuracy <= 1000 else 10
@@ -146,20 +190,14 @@ def city_name(lat, lon, accuracy):
             return cached["label"]
     except (OSError, ValueError, KeyError, TypeError):
         pass
-    params = urllib.parse.urlencode({"lat": f"{lat:.4f}", "lon": f"{lon:.4f}",
-                                    "format": "jsonv2", "zoom": zoom, "accept-language": "en",
-                                    "layer": "address"})
-    request = urllib.request.Request("https://nominatim.openstreetmap.org/reverse?" + params,
-                                     headers={"User-Agent": "status-bar-weather/1.0"})
-    # All CLI modes hold refresh.lock, so concurrent clicks/probes cannot exceed
-    # Nominatim's one-request-per-second limit. Cache repeated queries for a day.
-    time.sleep(1)
     try:
-        with urllib.request.urlopen(request, timeout=10) as response:
-            address = json.load(response)["address"]
-        if not isinstance(address, dict):
-            raise ValueError("invalid address returned")
-        label = address_label(address, detailed=zoom == 14)
+        address = reverse_address(lat, lon, zoom)
+        try:
+            label = address_label(address, detailed=zoom == 14)
+        except ValueError:
+            if zoom != 14:
+                raise
+            label = address_label(reverse_address(lat, lon, 10), detailed=False)
     except (OSError, ValueError, KeyError, TypeError) as error:
         raise LocationError("Device located, but city lookup is unavailable; click to retry") from error
     CITY_CACHE.parent.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,13 @@
+[Unit]
+Description=GeoClue permission agent for the Sway session
+PartOf=sway-session.target
+After=sway-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/geoclue-2.0/demos/agent
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=sway-session.target

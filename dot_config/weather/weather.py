@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import unicodedata
 import urllib.parse
 import urllib.request
 
@@ -72,6 +73,23 @@ WEATHER_CODES = {
 }
 
 
+def display_width(text):
+    """Approximate terminal/Pango columns without adding a Python dependency."""
+    return sum(0 if unicodedata.combining(char) else
+               2 if unicodedata.east_asian_width(char) in ("W", "F") else 1
+               for char in text)
+
+
+def centered_tooltip(text):
+    """Center multiline weather text using non-collapsing monospace padding."""
+    lines = text.splitlines()
+    if len(lines) < 2:
+        return text
+    width = max(map(display_width, lines))
+    return "\n".join("\N{NO-BREAK SPACE}" * ((width - display_width(line)) // 2) + line
+                     for line in lines)
+
+
 def load_cache():
     try:
         data = json.loads(CACHE_FILE.read_text())
@@ -131,6 +149,7 @@ def weather(force=False):
             reason = str(error)
         else:
             reason = "Weather service unavailable; click to retry"
+        print(reason, file=sys.stderr)
         if cached:
             result = dict(cached["result"])
             age = max(0, int((time.time() - cached["timestamp"]) / 60))
@@ -171,7 +190,7 @@ def main():
     else:
         # Waybar interprets tooltip markup; SketchyBar displays plain text.
         if sys.platform.startswith("linux"):
-            result = dict(result, tooltip=html.escape(result["tooltip"]))
+            result = dict(result, tooltip=html.escape(centered_tooltip(result["tooltip"])))
         print(json.dumps(result))
     return 0
 
